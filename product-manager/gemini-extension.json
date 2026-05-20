@@ -1,0 +1,6 @@
+{
+  "name": "product-manager",
+  "version": "0.1.0",
+  "description": "End-to-end product management: demand capture, theme synthesis, PRD authoring, work-item translation, exec narrative, and PowerPoint/SDD generation. Includes the product-manager subagent.",
+  "contextFileName": "GEMINI.md"
+}

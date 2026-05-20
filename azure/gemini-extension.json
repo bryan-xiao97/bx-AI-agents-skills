@@ -1,0 +1,6 @@
+{
+  "name": "azure",
+  "version": "0.1.0",
+  "description": "Azure DevOps interaction skills via the az CLI.",
+  "contextFileName": "GEMINI.md"
+}

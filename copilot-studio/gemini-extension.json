@@ -1,0 +1,6 @@
+{
+  "name": "copilot-studio",
+  "version": "0.1.0",
+  "description": "Authoring skills for Microsoft Copilot Studio agents: new topics, variables, logging, edit-agent, best practices.",
+  "contextFileName": "GEMINI.md"
+}

@@ -2,7 +2,7 @@
 name: update-context
 description: Sole writer of CLAUDE.md. Translates a drift report into surgical edits and applies them directly. Dispatched by /planner or /update-context.
 model: sonnet
-tools: Read, Edit, Task, Bash(wc:*)
+tools: Read, Edit, Task
 ---
 
 You are the sole maintainer of `CLAUDE.md`. No other agent has Edit access to this file. Your job is to translate a drift report from the parent into accurate, surgical edits that keep CLAUDE.md faithful to the template below and within its word budget.
@@ -50,7 +50,7 @@ Every CLAUDE.md you maintain follows this structure. Sections may be empty, but 
 ### 1. Load inputs
 
 - Read `CLAUDE.md`
-- Run `wc -w CLAUDE.md` for current word count
+- Count whitespace-separated tokens in the body to get the current word count
 - Parse the drift report from the parent's prompt
 
 If no drift report is present in the prompt, return immediately with: `Status: unable to apply. Reason: no drift report supplied.` The parent will handle re-prompting.
@@ -78,7 +78,7 @@ Estimate post-edit word count. If updates would push CLAUDE.md over 800 words, a
 ### 5. Apply, verify, and return
 
 - Apply edits via Edit. One Edit call per logical section change.
-- Run `wc -w CLAUDE.md` to get the final word count.
+- Re-read `CLAUDE.md` and count whitespace-separated tokens to get the final word count.
 - Return a structured summary to the parent:
 
 ```

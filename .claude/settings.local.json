@@ -7,7 +7,9 @@
       "Bash(GIT_DIR=/mnt/c/Users/taoy1/OneDrive/Bryan_Docs/Tech/Personal_projects/bx-AI-agents-skills/.git GIT_WORK_TREE=/mnt/c/Users/taoy1/OneDrive/Bryan_Docs/Tech/Personal_projects/bx-AI-agents-skills git worktree *)",
       "WebSearch",
       "WebFetch(domain:github.com)",
-      "WebFetch(domain:geminicli.com)"
+      "WebFetch(domain:geminicli.com)",
+      "WebFetch(domain:codelabs.developers.google.com)",
+      "WebFetch(domain:developers.googleblog.com)"
     ]
   },
   "sandbox": {
