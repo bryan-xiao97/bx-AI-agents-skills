@@ -1,18 +1,10 @@
 # bx-AI-agents-skills
 
-<<<<<<< HEAD
 Personal plugin collection for Azure DevOps, Microsoft Copilot Studio authoring, product management workflows, and project-planning discipline. Dual-published as both [Claude Code plugins](https://docs.claude.com/en/claude-code/plugins) and Antigravity CLI / Gemini CLI extensions.
 
 ## Overview
 
 This repo is a plugin marketplace containing four plugins. Each plugin groups related skills (and optionally subagents) into a self-contained directory that either Claude Code or the Antigravity CLI (formerly Gemini CLI) can install and invoke directly. `SKILL.md` follows the open Agent Skills standard, so each skill works identically in both tools. Subagent and command files differ slightly between ecosystems — both formats are shipped side-by-side.
-=======
-Personal Claude Code plugin collection for Azure DevOps, Microsoft Copilot Studio authoring, technical product management and planning workflows.
-
-## Overview
-
-This repo is a [Claude Code plugin marketplace](https://docs.claude.com/en/claude-code/plugins) containing four plugins. Each plugin groups related skills (and optionally subagents or commands) into a self-contained directory that Claude Code can install and invoke directly.
->>>>>>> 471e6f5 (clean-up)
 
 ## Plugins
 
@@ -38,17 +30,18 @@ Author and maintain Microsoft Copilot Studio agents from the command line.
 
 ### `technical-pm` — PM Lifecycle
 
-End-to-end product management across a five-stage lifecycle, from raw stakeholder input to exec-ready strategy. Includes a `product-manager` subagent that orchestrates the full flow.
+End-to-end product management across a six-stage lifecycle, from raw stakeholder input to exec-ready strategy. Includes a `technical-pm` subagent that orchestrates the full flow.
 
-**Five stages:**
+**Six stages:**
 
 | Stage | Skill | Output |
 |-------|-------|--------|
-| 1 — Capture demand | `pm-capture-demand` | Structured demand note from meeting transcripts, demo notes, or stakeholder emails |
-| 2 — Surface themes | `pm-surface-themes` | Clustered theme document, each theme backed by ≥2 demand sources |
-| 3 — Author PRD | `pm-write-prd` | Product + technical design spec with decisions, alternatives rejected, and constraints named |
-| 4 — Translate to work items | `pm-translate-to-workitems` | Epic → Feature → Story → Task drafts as local Markdown files |
-| 5 — Exec narrative | `pm-exec-narrative` | One-page executive summary derived from the work item plan and PRD |
+| 1 — Capture demand | `technical-pm-capture-demand` | Structured demand note from meeting transcripts, demo notes, or stakeholder emails |
+| 2 — Surface themes | `technical-pm-surface-themes` | Clustered theme document, each theme backed by ≥2 demand sources |
+| 3 — Author PRD | `technical-pm-write-prd` | Functional PRD with decisions, alternatives rejected, and constraints named |
+| 4 — Technical design | `technical-pm-technical-design` | Candidate approaches weighed on trade-offs with a recommended path forward, plus the chosen architecture, data flow, integrations, NFRs, and risks — every decision traced to a PRD decision |
+| 5 — Translate to work items | `technical-pm-translate-to-workitems` | Epic → Feature → Story → Task drafts as local Markdown files |
+| 6 — Exec narrative | `technical-pm-exec-narrative` | One-page executive summary derived from the work item plan and PRD |
 
 **Additional skills:**
 
@@ -57,7 +50,6 @@ End-to-end product management across a five-stage lifecycle, from raw stakeholde
 | `bx-ppt` | Generate a PowerPoint deck from a structured input using `pptxgenjs` (cross-platform). |
 | `sdd-generator` | Generate a Software Design Document from a PRD or set of work items. |
 
-<<<<<<< HEAD
 ### `better-planning` — Planning System
 
 Custom planning system with strict role separation. A read-only planner produces vetted implementation plans; a scoped research agent verifies specific facts on demand; a sole-writer agent maintains `CLAUDE.md` / `GEMINI.md`.
@@ -68,19 +60,6 @@ Custom planning system with strict role separation. A read-only planner produces
 | `/update-context` | Audits the project context file for drift and dispatches the writer agent. |
 | `explore-scoped` (agent) | Read-only, narrow file-bounded research. Dispatched by `/planner` and `/update-context`. |
 | `update-context` (agent) | Sole writer of `CLAUDE.md` / `GEMINI.md`. Translates a drift report into surgical edits. |
-=======
-### `better-planning` — Custom Planning System
-
-A structured planning system with strict role separation across three dedicated components.
-
-| Component | Role | What it does |
-|-----------|------|-------------|
-| `planner` command | Read-only planner (Opus) | Produces a vetted implementation plan grounded in current codebase state. Invoke via `/planner <task>`. |
-| `explore-scoped` agent | Research subagent (Haiku) | Performs narrow, file-bounded research to answer scoped questions without modifying anything. |
-| `update-context` skill | Sole CLAUDE.md writer (Sonnet) | Translates a drift report into surgical, approved edits to CLAUDE.md. Never audits the codebase itself. |
-
-Unlike the other plugins, `better-planning` exposes a `planner` command and an `update-context` skill rather than only skills.
->>>>>>> 471e6f5 (clean-up)
 
 ## Installation
 
@@ -99,11 +78,7 @@ claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills
 ```bash
 claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/azure
 claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/copilot-studio
-<<<<<<< HEAD
-claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/product-manager
-=======
 claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/technical-pm
->>>>>>> 471e6f5 (clean-up)
 claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/better-planning
 ```
 
@@ -116,7 +91,7 @@ claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/better-pl
 ```bash
 gemini extensions install https://github.com/bryanxiao/bx-AI-agents-skills/azure
 gemini extensions install https://github.com/bryanxiao/bx-AI-agents-skills/copilot-studio
-gemini extensions install https://github.com/bryanxiao/bx-AI-agents-skills/product-manager
+gemini extensions install https://github.com/bryanxiao/bx-AI-agents-skills/technical-pm
 gemini extensions install https://github.com/bryanxiao/bx-AI-agents-skills/better-planning
 ```
 
@@ -124,7 +99,7 @@ Skills are auto-discovered under `~/.gemini/extensions/<plugin>/skills/`. Subage
 
 ### After installation
 
-Skills are available as slash commands (e.g. `/az-devops`, `/pm-write-prd`, `/planner`). Subagents (`product-manager`, `explore-scoped`, `update-context`) are available via the agent picker.
+Skills are available as slash commands (e.g. `/az-devops`, `/technical-pm-write-prd`, `/planner`). Subagents (`technical-pm`, `explore-scoped`, `update-context`) are available via the agent picker.
 
 ## Repository Layout
 
@@ -149,33 +124,23 @@ bx-AI-agents-skills/
 │       ├── best-practices/
 │       ├── edit-agent/
 │       └── new-topic/
-<<<<<<< HEAD
-├── product-manager/
+├── technical-pm/
 │   ├── .claude-plugin/plugin.json
 │   ├── gemini-extension.json
 │   ├── GEMINI.md
 │   ├── agents/
-│   │   └── product-manager.md
+│   │   └── technical-pm.md
 │   └── skills/
+│       ├── bx-html-branding/
 │       ├── bx-ppt/
-│       ├── bx-ppt-COM/
-=======
-├── technical-pm/
-│   ├── .claude-plugin/
-│   │   └── plugin.json
-│   ├── agents/
-│   │   └── product-manager.md  # Subagent definition
-│   └── skills/
-│       ├── bx-ppt/
->>>>>>> 471e6f5 (clean-up)
-│       ├── pm-capture-demand/
-│       ├── pm-exec-narrative/
-│       ├── pm-surface-themes/
-│       ├── pm-translate-to-workitems/
-│       ├── pm-write-prd/
+│       ├── technical-pm-capture-demand/
+│       ├── technical-pm-exec-narrative/
+│       ├── technical-pm-surface-themes/
+│       ├── technical-pm-technical-design/
+│       ├── technical-pm-translate-to-workitems/
+│       ├── technical-pm-write-prd/
 │       └── sdd-generator/
 └── better-planning/
-<<<<<<< HEAD
     ├── .claude-plugin/plugin.json
     ├── gemini-extension.json
     ├── GEMINI.md
@@ -190,19 +155,6 @@ bx-AI-agents-skills/
 ```
 
 Each skill lives in its own directory and exposes a `SKILL.md` as its entry point (open Agent Skills standard — same file works in both Claude and Antigravity/Gemini). Subagents are defined in `agents/*.md`. Slash commands ship in both Claude `.md` and Antigravity/Gemini `.toml` forms.
-=======
-    ├── .claude-plugin/
-    │   └── plugin.json
-    ├── agents/
-    │   └── explore-scoped.md   # Scoped research subagent
-    ├── commands/
-    │   └── planner.md          # /planner command definition
-    └── skills/
-        └── update-context/     # Sole CLAUDE.md writer
-```
-
-Each skill lives in its own directory and exposes a `SKILL.md` as its entry point. Subagents are defined in `agents/*.md`. Commands are defined in `commands/*.md`.
->>>>>>> 471e6f5 (clean-up)
 
 ## Adding a New Skill
 

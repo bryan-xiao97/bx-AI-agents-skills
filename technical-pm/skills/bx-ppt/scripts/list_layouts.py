@@ -2,19 +2,17 @@
 """List slide masters and layouts in a .pptx template.
 
 Usage:
-  python scripts/list_layouts.py                              # bundled template
-  python scripts/list_layouts.py path/to/other-template.pptx  # any template
+  python scripts/list_layouts.py path/to/template.pptx  # any user-supplied template
 
 Reads the OOXML zip directly (no python-pptx dependency) so it works in the
-same environment as the rest of the skill's scripts.
+same environment as the rest of the skill's scripts. Use this only when a user
+supplies their own template to edit; the default workflow builds from scratch
+with pptxgenjs.
 """
 import sys
 import zipfile
 import xml.etree.ElementTree as ET
 from pathlib import Path
-
-SKILL_DIR = Path(__file__).resolve().parent.parent
-DEFAULT_TEMPLATE = SKILL_DIR / "template" / "Solomon Default Template.pptx"
 
 NS = {
     "p": "http://schemas.openxmlformats.org/presentationml/2006/main",
@@ -112,5 +110,6 @@ def main(path: Path) -> None:
 
 
 if __name__ == "__main__":
-    target = Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_TEMPLATE
-    main(target)
+    if len(sys.argv) < 2:
+        sys.exit("Usage: python scripts/list_layouts.py path/to/template.pptx")
+    main(Path(sys.argv[1]))

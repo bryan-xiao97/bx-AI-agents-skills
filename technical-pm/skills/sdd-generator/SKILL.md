@@ -97,7 +97,7 @@ Write `working/sdd_content.json` using this schema:
 Use the bundled helper script to create the final document:
 
 ```bash
-python product-manager/skills/sdd-generator/scripts/populate_sdd.py working/sdd_content.json product-manager/skills/sdd-generator/assets/SDD_template.docx working/<agent-name>-SDD.docx
+python technical-pm/skills/sdd-generator/scripts/populate_sdd.py working/sdd_content.json technical-pm/skills/sdd-generator/assets/SDD_template.docx working/<agent-name>-SDD.docx
 ```
 
 Create `working/` if it does not already exist. The output filename should be descriptive and end with `-SDD.docx`.

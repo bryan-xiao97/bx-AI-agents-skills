@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>[Document Title] — [Author / Team]</title>
+    <style>
+      /* Paste the full contents of house-style.css here so the file stays
+         self-contained. Do not link to it externally — a shared .html must
+         carry its own styles. */
+    </style>
+  </head>
+  <body>
+    <!-- doc--wide for one-pagers; default width for memos and reports -->
+    <main class="doc">
+      <header>
+        <p class="doc-eyebrow">Decision Memo</p>
+        <h1 class="doc-title">[One-line title that states the point]</h1>
+
+        <!-- Memo header. Drop this block for reports/one-pagers. -->
+        <dl class="doc-meta">
+          <dt>To</dt>
+          <dd>[Recipient(s)]</dd>
+          <dt>From</dt>
+          <dd>[Author]</dd>
+          <dt>Date</dt>
+          <dd>[Month DD, YYYY]</dd>
+          <dt>Re</dt>
+          <dd>[Subject]</dd>
+        </dl>
+      </header>
+
+      <p class="lead">
+        [Lead paragraph — answer first. State the recommendation or headline in
+        one or two sentences before any supporting detail.]
+      </p>
+
+      <section>
+        <h2>[Section heading]</h2>
+        <p>[Body copy. Keep paragraphs short and scannable.]</p>
+
+        <ul>
+          <li>
+            <span class="label">[Category]:</span> [supporting point]
+          </li>
+          <li>
+            <span class="label">[Category]:</span> [supporting point]
+          </li>
+        </ul>
+      </section>
+
+      <!-- Tea-green callout for supporting context -->
+      <aside class="callout">
+        <p class="callout-title">Context</p>
+        <p>[Supporting detail, quote, or example that aids the main point.]</p>
+      </aside>
+
+      <section>
+        <h2>[Second section]</h2>
+        <p>[Body copy.]</p>
+
+        <table>
+          <caption>[Table caption / source]</caption>
+          <thead>
+            <tr>
+              <th>[Column]</th>
+              <th>[Column]</th>
+              <th>[Column]</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>[cell]</td>
+              <td>[cell]</td>
+              <td>[cell]</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <!-- The single sharp accent: at most one coral element per document -->
+      <aside class="callout callout--key">
+        <p class="callout-title">Recommendation</p>
+        <p>[The one thing you want the reader to take away or act on.]</p>
+      </aside>
+
+      <footer class="doc-footer">
+        <span>[Private and Confidential]</span>
+        <span>[Author / Team] · [Date]</span>
+      </footer>
+    </main>
+  </body>
+</html>

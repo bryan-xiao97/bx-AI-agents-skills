@@ -24,9 +24,9 @@
     {
       "name": "technical-pm",
       "source": "./technical-pm",
-      "description": "5-stage product management lifecycle (demand → themes → PRD → work items → exec narrative) plus the product-manager subagent and PPT/SDD generation skills.",
+      "description": "6-stage product management lifecycle (demand → themes → PRD → technical design → work items → exec narrative) plus the technical-pm subagent and PPT/SDD/HTML-document generation skills.",
       "category": "productivity",
-      "keywords": ["product-management", "prd", "roadmap", "themes", "pptx", "sdd"]
+      "keywords": ["product-management", "prd", "roadmap", "themes", "pptx", "sdd", "html", "memo"]
     },
     {
       "name": "better-planning",

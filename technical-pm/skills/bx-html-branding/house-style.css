@@ -1,0 +1,403 @@
+/* ==========================================================================
+   bx-html-branding — house style
+   Warm pastel aesthetic on charcoal text. Adapted from the bx-pptx deck style
+   for readable, easy-to-digest professional HTML documents.
+   Inline this whole file into a <style> block so the document stays one
+   self-contained, shareable, printable file.
+   ========================================================================== */
+
+/* --- Design tokens ------------------------------------------------------- */
+:root {
+  /* Palette (charcoal carries all contrast; tints never go full-strength) */
+  --color-charcoal: #2b2b2b;
+  --color-coral: #fe5f55;
+  --color-caramel: #f0b67f;
+  --color-sand: #d6d1b1;
+  --color-tea: #c7efcf;
+  --color-beige: #eef5db;
+  --color-white: #ffffff;
+
+  /* Semantic roles */
+  --color-text: var(--color-charcoal);
+  --color-text-muted: #595959; /* ~7:1 on white — safe for metadata */
+  --color-bg: var(--color-white);
+  --color-bg-tint: #fbfcf7; /* barely-there page wash; optional */
+  --color-accent: var(--color-coral); /* the one sharp accent — use once */
+  --color-rule: var(--color-sand);
+  --color-rule-soft: #ece8d4;
+
+  /* Type — Segoe UI first to match the house style and Outlook context */
+  --font-sans: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+    Arial, sans-serif;
+  --text-meta: 0.8125rem; /* 13px */
+  --text-body: 1rem; /* 16px */
+  --text-lead: 1.1875rem; /* 19px */
+  --text-h3: 1.1875rem;
+  --text-h2: 1.5rem;
+  --text-h1: 2rem;
+  --text-eyebrow: 0.75rem;
+  --leading-body: 1.65;
+
+  /* Rhythm */
+  --measure: 42rem; /* ~70ch reading column */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+
+  --radius: 10px;
+  --bar-width: 4px; /* the vertical accent bar — web analog of the deck's */
+
+  --duration: 150ms;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Reset / base -------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg-tint);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Document shell ------------------------------------------------------ */
+.doc {
+  max-width: var(--measure);
+  margin: var(--space-12) auto;
+  padding: var(--space-12) var(--space-8);
+  background: var(--color-white);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius);
+  box-shadow: 0 1px 2px rgba(43, 43, 43, 0.04),
+    0 8px 30px rgba(43, 43, 43, 0.05);
+}
+
+/* One-pagers can run wider and denser */
+.doc--wide {
+  max-width: 56rem;
+}
+
+/* --- Masthead / header --------------------------------------------------- */
+.doc-eyebrow {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-eyebrow);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.doc-title {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-h1);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* Memo-style metadata block (To / From / Date / Re) */
+.doc-meta {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-1) var(--space-4);
+  margin: 0 0 var(--space-8);
+  padding: var(--space-4) 0;
+  border-top: 1px solid var(--color-rule);
+  border-bottom: 1px solid var(--color-rule);
+  font-size: var(--text-meta);
+}
+.doc-meta dt {
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.doc-meta dd {
+  margin: 0;
+}
+
+/* Lead paragraph — sets up the document */
+.lead {
+  font-size: var(--text-lead);
+  line-height: 1.55;
+  color: var(--color-text);
+  margin: 0 0 var(--space-8);
+}
+
+/* --- Headings: the vertical caramel accent bar (NO underlines) ----------- */
+h2,
+.h2 {
+  position: relative;
+  margin: var(--space-12) 0 var(--space-4);
+  padding-left: var(--space-4);
+  font-size: var(--text-h2);
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+h2::before,
+.h2::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.15em;
+  bottom: 0.15em;
+  width: var(--bar-width);
+  border-radius: 2px;
+  background: var(--color-caramel);
+}
+
+h3,
+.h3 {
+  margin: var(--space-8) 0 var(--space-2);
+  font-size: var(--text-h3);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* --- Body copy ----------------------------------------------------------- */
+p {
+  margin: 0 0 var(--space-4);
+}
+
+a {
+  color: var(--color-charcoal);
+  text-decoration: underline;
+  text-decoration-color: var(--color-caramel);
+  text-underline-offset: 2px;
+  text-decoration-thickness: 2px;
+  transition: text-decoration-color var(--duration) var(--ease);
+}
+a:hover {
+  text-decoration-color: var(--color-coral);
+}
+
+strong {
+  font-weight: 600;
+}
+
+/* Underlined bold inline emphasis — for category labels within lists */
+.label {
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: var(--color-sand);
+  text-underline-offset: 2px;
+}
+
+/* The single sharp accent. Use once per document. */
+.accent {
+  color: var(--color-coral);
+  font-weight: 600;
+}
+
+ul,
+ol {
+  margin: 0 0 var(--space-4);
+  padding-left: var(--space-6);
+}
+li {
+  margin-bottom: var(--space-2);
+}
+li::marker {
+  color: var(--color-caramel);
+}
+
+/* --- Callout blocks (tea-green / beige tints) ---------------------------- */
+.callout {
+  margin: var(--space-6) 0;
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-tea);
+  border-left: var(--bar-width) solid var(--color-caramel);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+.callout > :last-child {
+  margin-bottom: 0;
+}
+.callout-title {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-meta);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Alternate tint, pairs with .callout in side-by-side layouts */
+.callout--beige {
+  background: var(--color-beige);
+}
+
+/* The one key takeaway — coral edge. Use at most once per document. */
+.callout--key {
+  background: var(--color-beige);
+  border-left-color: var(--color-coral);
+}
+
+/* --- Stat row (one-pagers) ----------------------------------------------- */
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--space-4);
+  margin: var(--space-8) 0;
+}
+.stat {
+  padding: var(--space-4) var(--space-6);
+  background: var(--color-beige);
+  border-radius: var(--radius);
+}
+.stat--tea {
+  background: var(--color-tea);
+}
+.stat-value {
+  display: block;
+  font-size: 1.75rem;
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+.stat-label {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--text-meta);
+  color: var(--color-text-muted);
+}
+/* Promote a single stat to the document's sharp accent */
+.stat--accent .stat-value {
+  color: var(--color-coral);
+}
+
+/* --- Tables -------------------------------------------------------------- */
+table {
+  width: 100%;
+  margin: var(--space-6) 0;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+caption {
+  margin-bottom: var(--space-2);
+  font-size: var(--text-meta);
+  color: var(--color-text-muted);
+  text-align: left;
+}
+th {
+  padding: var(--space-2) var(--space-3);
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid var(--color-sand);
+}
+td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-rule-soft);
+  vertical-align: top;
+}
+tbody tr:nth-child(even) {
+  background: var(--color-bg-tint);
+}
+
+/* --- Pills / tags -------------------------------------------------------- */
+.tag {
+  display: inline-block;
+  padding: 0.1rem var(--space-3);
+  border-radius: 999px;
+  background: var(--color-sand);
+  font-size: var(--text-meta);
+  font-weight: 600;
+  line-height: 1.6;
+}
+.tag--tea {
+  background: var(--color-tea);
+}
+.tag--accent {
+  background: var(--color-coral);
+  color: var(--color-white);
+}
+
+/* --- Dividers ------------------------------------------------------------ */
+hr {
+  margin: var(--space-12) 0;
+  border: 0;
+  border-top: 1px solid var(--color-rule);
+}
+
+/* --- Footer -------------------------------------------------------------- */
+.doc-footer {
+  margin-top: var(--space-12);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--color-rule);
+  font-size: var(--text-meta);
+  color: var(--color-text-muted);
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+/* --- Print / PDF --------------------------------------------------------- */
+@media print {
+  :root {
+    --measure: 100%;
+  }
+  body {
+    background: var(--color-white);
+  }
+  .doc {
+    margin: 0;
+    max-width: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    padding: 0;
+  }
+  h2,
+  h3 {
+    break-after: avoid;
+  }
+  .callout,
+  .stat,
+  table,
+  figure {
+    break-inside: avoid;
+  }
+  a {
+    text-decoration-color: var(--color-sand);
+  }
+}
+
+/* --- Motion preferences -------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+  }
+}
+
+/* --- Small screens ------------------------------------------------------- */
+@media (max-width: 40rem) {
+  .doc {
+    margin: 0;
+    padding: var(--space-8) var(--space-6);
+    border: 0;
+    border-radius: 0;
+  }
+  .doc-meta {
+    grid-template-columns: 1fr;
+  }
+  .doc-footer {
+    flex-direction: column;
+  }
+}
