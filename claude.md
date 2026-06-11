@@ -16,7 +16,7 @@ This repo is a Claude Code plugin marketplace — four self-contained plugins re
 - `.claude-plugin/marketplace.json` — marketplace manifest registering all four plugins
 - `azure/` — Azure DevOps via the `az` CLI. Skill: `az-devops` (work items, sprints, repos)
 - `copilot-studio/` — Copilot Studio authoring. Skills: `new-topic`, `add-global-variable`, `add-logging`, `edit-agent`, `best-practices`
-- `technical-pm/` — 6-stage PM lifecycle (demand → themes → PRD → technical design → work items → exec narrative) plus `bx-ppt` and `sdd-generator`. Subagent: `technical-pm`
+- `technical-pm/` — 6-stage PM lifecycle (demand → themes → PRD → technical design → work items → exec narrative) plus `bx-ppt`, `sdd-generator` and `bx-html-branding`. Subagent: `technical-pm`
 - `better-planning/` — read-only `planner` command, `explore-scoped` research subagent (`haiku`), `update-context` skill (sole CLAUDE.md writer)
 
 ## Non-negotiables
