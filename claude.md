@@ -9,6 +9,16 @@ Manager: Paula Ruiz | Skip Manager: David Buza
 - **Integrations:** SharePoint, Outlook, Teams, Microsoft Graph API
 - **DevOps:** Azure DevOps Git repos, pipeline YAML, PR gates, CI/CD, Power Platform ALM (managed/unmanaged solutions)
 
+## Architecture overview
+This repo is a Claude Code plugin marketplace — four self-contained plugins registered in `.claude-plugin/marketplace.json`. Each plugin bundles skills (`skills/<name>/SKILL.md`) and optionally subagents (`agents/*.md`) and commands (`commands/*.md`). `README.md` is the human-facing catalog. Plugins install and invoke independently.
+
+## Module map
+- `.claude-plugin/marketplace.json` — marketplace manifest registering all four plugins
+- `azure/` — Azure DevOps via the `az` CLI. Skill: `az-devops` (work items, sprints, repos)
+- `copilot-studio/` — Copilot Studio authoring. Skills: `new-topic`, `add-global-variable`, `add-logging`, `edit-agent`, `best-practices`
+- `technical-pm/` — 5-stage PM lifecycle (demand → themes → PRD → work items → exec narrative) plus `bx-ppt` and `sdd-generator`. Subagent: `product-manager`
+- `better-planning/` — read-only `planner` command, `explore-scoped` research subagent (`haiku`), `update-context` skill (sole CLAUDE.md writer)
+
 ## Non-negotiables
 - No Oxford commas.
 - No double em-dashes — use an en-dash or restructure the sentence.

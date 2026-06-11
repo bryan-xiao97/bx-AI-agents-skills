@@ -1,10 +1,18 @@
 # bx-AI-agents-skills
 
+<<<<<<< HEAD
 Personal plugin collection for Azure DevOps, Microsoft Copilot Studio authoring, product management workflows, and project-planning discipline. Dual-published as both [Claude Code plugins](https://docs.claude.com/en/claude-code/plugins) and Antigravity CLI / Gemini CLI extensions.
 
 ## Overview
 
 This repo is a plugin marketplace containing four plugins. Each plugin groups related skills (and optionally subagents) into a self-contained directory that either Claude Code or the Antigravity CLI (formerly Gemini CLI) can install and invoke directly. `SKILL.md` follows the open Agent Skills standard, so each skill works identically in both tools. Subagent and command files differ slightly between ecosystems — both formats are shipped side-by-side.
+=======
+Personal Claude Code plugin collection for Azure DevOps, Microsoft Copilot Studio authoring, technical product management and planning workflows.
+
+## Overview
+
+This repo is a [Claude Code plugin marketplace](https://docs.claude.com/en/claude-code/plugins) containing four plugins. Each plugin groups related skills (and optionally subagents or commands) into a self-contained directory that Claude Code can install and invoke directly.
+>>>>>>> 471e6f5 (clean-up)
 
 ## Plugins
 
@@ -28,7 +36,7 @@ Author and maintain Microsoft Copilot Studio agents from the command line.
 | `edit-agent` | Make structural edits to an existing agent definition. |
 | `best-practices` | Reference patterns for orchestrator variables, date context, child-agent response suppression, and topic redirects with variable passing. |
 
-### `product-manager` — PM Lifecycle
+### `technical-pm` — PM Lifecycle
 
 End-to-end product management across a five-stage lifecycle, from raw stakeholder input to exec-ready strategy. Includes a `product-manager` subagent that orchestrates the full flow.
 
@@ -47,9 +55,9 @@ End-to-end product management across a five-stage lifecycle, from raw stakeholde
 | Skill | What it does |
 |-------|-------------|
 | `bx-ppt` | Generate a PowerPoint deck from a structured input using `pptxgenjs` (cross-platform). |
-| `bx-ppt-COM` | Windows-specific variant that drives PowerPoint via COM automation for richer fidelity. |
 | `sdd-generator` | Generate a Software Design Document from a PRD or set of work items. |
 
+<<<<<<< HEAD
 ### `better-planning` — Planning System
 
 Custom planning system with strict role separation. A read-only planner produces vetted implementation plans; a scoped research agent verifies specific facts on demand; a sole-writer agent maintains `CLAUDE.md` / `GEMINI.md`.
@@ -60,6 +68,19 @@ Custom planning system with strict role separation. A read-only planner produces
 | `/update-context` | Audits the project context file for drift and dispatches the writer agent. |
 | `explore-scoped` (agent) | Read-only, narrow file-bounded research. Dispatched by `/planner` and `/update-context`. |
 | `update-context` (agent) | Sole writer of `CLAUDE.md` / `GEMINI.md`. Translates a drift report into surgical edits. |
+=======
+### `better-planning` — Custom Planning System
+
+A structured planning system with strict role separation across three dedicated components.
+
+| Component | Role | What it does |
+|-----------|------|-------------|
+| `planner` command | Read-only planner (Opus) | Produces a vetted implementation plan grounded in current codebase state. Invoke via `/planner <task>`. |
+| `explore-scoped` agent | Research subagent (Haiku) | Performs narrow, file-bounded research to answer scoped questions without modifying anything. |
+| `update-context` skill | Sole CLAUDE.md writer (Sonnet) | Translates a drift report into surgical, approved edits to CLAUDE.md. Never audits the codebase itself. |
+
+Unlike the other plugins, `better-planning` exposes a `planner` command and an `update-context` skill rather than only skills.
+>>>>>>> 471e6f5 (clean-up)
 
 ## Installation
 
@@ -78,7 +99,11 @@ claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills
 ```bash
 claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/azure
 claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/copilot-studio
+<<<<<<< HEAD
 claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/product-manager
+=======
+claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/technical-pm
+>>>>>>> 471e6f5 (clean-up)
 claude plugin install https://github.com/bryanxiao/bx-AI-agents-skills/better-planning
 ```
 
@@ -124,6 +149,7 @@ bx-AI-agents-skills/
 │       ├── best-practices/
 │       ├── edit-agent/
 │       └── new-topic/
+<<<<<<< HEAD
 ├── product-manager/
 │   ├── .claude-plugin/plugin.json
 │   ├── gemini-extension.json
@@ -133,6 +159,15 @@ bx-AI-agents-skills/
 │   └── skills/
 │       ├── bx-ppt/
 │       ├── bx-ppt-COM/
+=======
+├── technical-pm/
+│   ├── .claude-plugin/
+│   │   └── plugin.json
+│   ├── agents/
+│   │   └── product-manager.md  # Subagent definition
+│   └── skills/
+│       ├── bx-ppt/
+>>>>>>> 471e6f5 (clean-up)
 │       ├── pm-capture-demand/
 │       ├── pm-exec-narrative/
 │       ├── pm-surface-themes/
@@ -140,6 +175,7 @@ bx-AI-agents-skills/
 │       ├── pm-write-prd/
 │       └── sdd-generator/
 └── better-planning/
+<<<<<<< HEAD
     ├── .claude-plugin/plugin.json
     ├── gemini-extension.json
     ├── GEMINI.md
@@ -154,6 +190,19 @@ bx-AI-agents-skills/
 ```
 
 Each skill lives in its own directory and exposes a `SKILL.md` as its entry point (open Agent Skills standard — same file works in both Claude and Antigravity/Gemini). Subagents are defined in `agents/*.md`. Slash commands ship in both Claude `.md` and Antigravity/Gemini `.toml` forms.
+=======
+    ├── .claude-plugin/
+    │   └── plugin.json
+    ├── agents/
+    │   └── explore-scoped.md   # Scoped research subagent
+    ├── commands/
+    │   └── planner.md          # /planner command definition
+    └── skills/
+        └── update-context/     # Sole CLAUDE.md writer
+```
+
+Each skill lives in its own directory and exposes a `SKILL.md` as its entry point. Subagents are defined in `agents/*.md`. Commands are defined in `commands/*.md`.
+>>>>>>> 471e6f5 (clean-up)
 
 ## Adding a New Skill
 

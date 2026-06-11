@@ -22,8 +22,8 @@
       "keywords": ["copilot-studio", "microsoft", "agents", "topics"]
     },
     {
-      "name": "product-manager",
-      "source": "./product-manager",
+      "name": "technical-pm",
+      "source": "./technical-pm",
       "description": "5-stage product management lifecycle (demand → themes → PRD → work items → exec narrative) plus the product-manager subagent and PPT/SDD generation skills.",
       "category": "productivity",
       "keywords": ["product-management", "prd", "roadmap", "themes", "pptx", "sdd"]
