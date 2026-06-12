@@ -49,6 +49,9 @@ End-to-end product management across a six-stage lifecycle, from raw stakeholder
 |-------|-------------|
 | `bx-ppt` | Generate a PowerPoint deck from a structured input using `pptxgenjs` (cross-platform). |
 | `sdd-generator` | Generate a Software Design Document from a PRD or set of work items. |
+| `docx` | Create, read, and edit Word documents (`.docx`) — TOCs, headings, tracked changes, find-and-replace, images. |
+| `pdf` | Read, create, and manipulate PDFs — extract text/tables, merge/split, fill forms, watermark, OCR. |
+| `xlsx` | Create, read, and edit spreadsheets (`.xlsx`/`.xlsm`/`.csv`) — formulas, formatting, charts, data cleanup. |
 
 ### `better-planning` — Planning System
 
@@ -133,6 +136,9 @@ bx-AI-agents-skills/
 │   └── skills/
 │       ├── bx-html-branding/
 │       ├── bx-ppt/
+│       ├── docx/
+│       ├── pdf/
+│       ├── xlsx/
 │       ├── technical-pm-capture-demand/
 │       ├── technical-pm-exec-narrative/
 │       ├── technical-pm-surface-themes/

@@ -17,6 +17,9 @@ End-to-end product management across a 5-stage lifecycle. Each stage produces a 
 - **`bx-ppt`** — cross-platform PowerPoint generation via `pptxgenjs`.
 - **`bx-ppt-COM`** — Windows-only variant driving PowerPoint via COM automation for richer fidelity.
 - **`sdd-generator`** — Solution Design Document from a PRD or work items.
+- **`docx`** — create, read, and edit Word documents (`.docx`): TOCs, headings, tracked changes, find-and-replace, images.
+- **`pdf`** — read, create, and manipulate PDFs: extract text/tables, merge/split, fill forms, watermark, OCR.
+- **`xlsx`** — create, read, and edit spreadsheets (`.xlsx`/`.xlsm`/`.csv`): formulas, formatting, charts, data cleanup.
 
 ## Subagent
 
