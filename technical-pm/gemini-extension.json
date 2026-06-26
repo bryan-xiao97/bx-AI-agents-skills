@@ -1,6 +1,6 @@
 {
-  "name": "product-manager",
+  "name": "technical-pm",
   "version": "0.1.0",
-  "description": "End-to-end product management: demand capture, theme synthesis, PRD authoring, work-item translation, exec narrative, and PowerPoint/SDD generation. Includes the product-manager subagent.",
+  "description": "Composable, on-demand product-management skills: demand capture, theme synthesis, PRD authoring, technical design, work-item translation, exec narrative, and PowerPoint/SDD/HTML/Word/PDF/Excel document generation.",
   "contextFileName": "GEMINI.md"
 }

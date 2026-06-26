@@ -1,22 +1,22 @@
 ---
 name: technical-pm-write-prd
 description: >
-  Turns stage-2 themes into a functional Product Requirements Document (PRD) — problem statement, audience, scope (functional requirements and out-of-scope items), decisions with alternatives rejected, constraints, and success signals. Use whenever the user says "write a PRD", "document the decisions", "write up the requirements", "create the product spec", "formalize this into a PRD", or is ready to move from themes to formal requirements. The PRD is purely functional — the technical design lives in a separate stage-4 document (see /technical-pm-technical-design). Writes to the 3_PRD_Decisions/ folder.
+  Turns a themes document — or any requirements input the user provides — into a functional Product Requirements Document (PRD): problem statement, audience, scope (functional requirements and out-of-scope items), decisions with alternatives rejected, constraints, and success signals. Use whenever the user says "write a PRD", "document the decisions", "write up the requirements", "create the product spec", "formalize this into a PRD", or is ready to turn a problem into formal requirements. The PRD is purely functional — technical design is a separate concern. Writes to the PRD_Decisions/ folder.
 ---
 
 # technical-pm-write-prd
 
-Produces the stage-3 functional PRD. Every decision traces to a theme; every theme is cited by name. This document is purely functional — the technical design lives in a separate stage-4 document (see `/technical-pm-technical-design`).
+Produces a functional PRD. Every decision traces to a theme or stated requirement; sources are cited by name. This document is purely functional — technical design is a separate concern, handled by `/technical-pm-technical-design` when needed.
 
 ## Workflow
 
-### Step 1 — Confirm upstream exists
+### Step 1 — Gather the source material
 
-Check for a `2_Themes_Evidence/` document for this product. If none exists, stop and route the user to `/technical-pm-surface-themes` first. If multiple themes docs exist in `2_Themes_Evidence/`, read the most recent one (by date in the filename or file modification time). If a themes doc exists but is sparse, proceed with `[TBD]` placeholders and flag the gaps clearly.
+Work from whatever the user provides: a themes document, pasted notes, or a direct description of the problem and requirements. If they point at a `Themes_Evidence/` folder and several docs exist, read the most recent (by date in the filename or file modification time). If the input is sparse, proceed with `[TBD]` placeholders and flag the gaps clearly. If nothing is supplied, ask for the problem or requirements before drafting.
 
 ### Step 2 — Derive the decision points
 
-From the themes doc, extract the open product choices the themes force — the questions this PRD must answer.
+From the source material, extract the open product choices it forces — the questions this PRD must answer.
 
 - Every entry in the themes doc's "Cross-cutting tensions" section automatically becomes a decision point. A tension between two themes is resolved by a decision; it cannot be ignored or deferred silently.
 - Carry each theme's "Open questions" into the relevant decision point. If no decision point covers an open question, it carries forward into the PRD's Open questions section.
@@ -43,7 +43,7 @@ Write the following. Cite themes by name throughout.
 - **Problem statement:** What user need or business gap does this address? Cite the driving themes.
 - **Audience:** Who uses this? Distinguish primary (direct users) from secondary (beneficiaries or affected parties).
 - **Scope:** Two parts.
-  - *In scope* — a numbered functional-requirements list (`FR-1`, `FR-2`, …). Each requirement is one line describing a concrete capability. Each traces to the resolved decision or theme that generated it. This list is what stage 5 decomposes into work items — write capabilities, not aspirations.
+  - *In scope* — a numbered functional-requirements list (`FR-1`, `FR-2`, …). Each requirement is one line describing a concrete capability. Each traces to the resolved decision or theme that generated it. This list is what gets decomposed into work items later — write capabilities, not aspirations.
   - *Out of scope* — an explicit bullet list of what this product does not do. Unresolved decisions that were parked go here until decided.
 - **Decisions:** Each resolved decision point from step 3, formatted as one subsection. Record the decision taken, the alternatives rejected (drawn from step 3 — not invented here), and the rationale citing the theme. One subsection per decision.
 - **Constraints:** Known limits (business, regulatory, operational). Mark unknown constraints `[TBD]`.
@@ -59,9 +59,7 @@ Present the full draft. Ask the user to:
 
 ### Step 6 — Write the file
 
-Write to `3_PRD_Decisions/`. Filename: `{Product} - PRD - {MM.DD}.md`. Report the full path on completion.
-
-When the PRD is written, point the user to `/technical-pm-technical-design` as the next stage — the build-ready technical design that turns these functional decisions into architecture.
+Write to `PRD_Decisions/`. Filename: `{Product} - PRD - {MM.DD}.md`. Report the full path on completion.
 
 ---
 
@@ -70,7 +68,7 @@ When the PRD is written, point the user to `/technical-pm-technical-design` as t
 ````markdown
 # PRD — {Product} — {YYYY-MM-DD}
 
-_Themes sourced from: [`2_Themes_Evidence/{themes-filename}`]({relative path})_
+_Themes sourced from: [`Themes_Evidence/{themes-filename}`]({relative path})_
 
 ---
 
@@ -107,7 +105,7 @@ _Themes sourced from: [`2_Themes_Evidence/{themes-filename}`]({relative path})_
 | **Decision** | {What was decided} |
 | **Alternatives rejected** | {What else was considered and why it was ruled out} |
 | **Rationale** | {Why this decision was made — cite the theme} |
-| **Theme** | {Theme name from stage-2} |
+| **Theme** | {Theme name} |
 
 ### Decision 2: {Short title}
 

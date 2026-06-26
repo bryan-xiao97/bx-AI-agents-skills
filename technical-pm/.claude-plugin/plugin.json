@@ -1,7 +1,7 @@
 {
   "name": "technical-pm",
   "version": "0.1.0",
-  "description": "End-to-end product management: demand capture, theme synthesis, PRD authoring, technical design, work-item translation, exec narrative, and PowerPoint/SDD/HTML/Word/PDF/Excel document generation. Includes the technical-pm subagent.",
+  "description": "Composable, on-demand product-management skills: demand capture, theme synthesis, PRD authoring, technical design, work-item translation, exec narrative, and PowerPoint/SDD/HTML/Word/PDF/Excel document generation.",
   "author": { "name": "Bryan Xiao", "email": "bryan.li.xiao@gmail.com" },
   "keywords": ["product-management", "prd", "roadmap", "pptx", "sdd", "html", "memo", "docx", "pdf", "xlsx"]
 }

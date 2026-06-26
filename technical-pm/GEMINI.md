@@ -1,33 +1,31 @@
-# product-manager
+# technical-pm
 
-End-to-end product management across a 5-stage lifecycle. Each stage produces a structured artifact that the next stage consumes.
+Composable, on-demand product-management skills. Each is usable on its own and works from whatever input you provide — there is no required order and no orchestrating subagent. Together they cover the path from raw stakeholder input to exec-ready strategy.
 
-## The 5 stages
+## The skills
 
-| Stage | Skill | Output folder | Output |
-|-------|-------|--------------|--------|
-| 1 — Capture demand | `pm-capture-demand` | `1_UserDemand_TechnicalReviews/` | Structured demand note from meeting transcripts, demo notes, or stakeholder emails |
-| 2 — Surface themes | `pm-surface-themes` | `2_Themes_Evidence/` | Theme cluster doc — each theme cites ≥2 demand sources |
-| 3 — Author PRD | `pm-write-prd` | `3_PRD_Decisions/` | Combined product + technical design spec with decisions, alternatives rejected, constraints |
-| 4 — Translate to work items | `pm-translate-to-workitems` | `4_Delivery_WorkItems/` | Epic → Feature → Story → Task draft Markdown files |
-| 5 — Exec narrative | `pm-exec-narrative` | `5_Prioritization_Strategy/` | One-page exec summary; optional PowerPoint deck |
+| Skill | Output folder | Output |
+|-------|--------------|--------|
+| `technical-pm-capture-demand` | `User_Demand/` | Structured demand note from meeting transcripts, demo notes, or stakeholder emails |
+| `technical-pm-surface-themes` | `Themes_Evidence/` | Theme cluster doc — each theme cites ≥2 evidence sources |
+| `technical-pm-write-prd` | `PRD_Decisions/` | Functional PRD with decisions, alternatives rejected, and constraints named |
+| `technical-pm-technical-design` | `TechnicalDesign/` | Candidate approaches weighed on trade-offs with a recommended path, plus the chosen architecture, data flow, integrations, NFRs, and risks |
+| `technical-pm-translate-to-workitems` | `Delivery_WorkItems/` | Epic → Feature → Story → Task draft Markdown files |
+| `technical-pm-exec-narrative` | `Prioritization_Strategy/` | One-page exec summary; optional PowerPoint deck |
 
 ## Additional skills
 
 - **`bx-ppt`** — cross-platform PowerPoint generation via `pptxgenjs`.
-- **`bx-ppt-COM`** — Windows-only variant driving PowerPoint via COM automation for richer fidelity.
+- **`bx-html-branding`** — standalone HTML documents in the house style (memos, briefings, one-pagers).
 - **`sdd-generator`** — Solution Design Document from a PRD or work items.
 - **`docx`** — create, read, and edit Word documents (`.docx`): TOCs, headings, tracked changes, find-and-replace, images.
 - **`pdf`** — read, create, and manipulate PDFs: extract text/tables, merge/split, fill forms, watermark, OCR.
 - **`xlsx`** — create, read, and edit spreadsheets (`.xlsx`/`.xlsm`/`.csv`): formulas, formatting, charts, data cleanup.
 
-## Subagent
-
-- **`product-manager`** — orchestrates the full 5-stage flow. Never skips a stage. Use when the user wants to move an idea end-to-end rather than invoking one stage at a time.
-
 ## Conventions
 
-- Stages are sequential. Don't write a PRD without themes; don't translate to work items without a PRD.
-- Every theme cites ≥2 evidence sources from stage 1.
-- Every PRD decision names the alternative rejected and why.
+- Skills run on demand and independently. Invoke whichever one the user asks for — there is no required sequence.
+- Each skill works from whatever input the user provides: pasted text, a file, or a folder they point at. It uses an upstream artifact only when the user supplies one; it never requires a prior skill to have run, and it never stops to route the user elsewhere.
+- Output folders organize artifacts; they do not gate anything. Write to the conventional folder if present, otherwise ask where to save.
+- Every theme cites ≥2 evidence sources. Every PRD decision names the alternative rejected and why. Every technical recommendation traces to a decision or requirement. Don't fabricate upstream material — flag `[TBD]` and ask.
 - Output is the artifact, not commentary about producing it. Markdown tables and structured bullets — no filler prose.

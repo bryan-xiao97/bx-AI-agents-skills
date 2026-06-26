@@ -28,20 +28,18 @@ Author and maintain Microsoft Copilot Studio agents from the command line.
 | `edit-agent` | Make structural edits to an existing agent definition. |
 | `best-practices` | Reference patterns for orchestrator variables, date context, child-agent response suppression, and topic redirects with variable passing. |
 
-### `technical-pm` — PM Lifecycle
+### `technical-pm` — PM Skills
 
-End-to-end product management across a six-stage lifecycle, from raw stakeholder input to exec-ready strategy. Includes a `technical-pm` subagent that orchestrates the full flow.
+Six composable product-management skills, each usable on its own and invoked on demand. Together they cover the path from raw stakeholder input to exec-ready strategy, but there is no required order — each skill works from whatever input you provide.
 
-**Six stages:**
-
-| Stage | Skill | Output |
-|-------|-------|--------|
-| 1 — Capture demand | `technical-pm-capture-demand` | Structured demand note from meeting transcripts, demo notes, or stakeholder emails |
-| 2 — Surface themes | `technical-pm-surface-themes` | Clustered theme document, each theme backed by ≥2 demand sources |
-| 3 — Author PRD | `technical-pm-write-prd` | Functional PRD with decisions, alternatives rejected, and constraints named |
-| 4 — Technical design | `technical-pm-technical-design` | Candidate approaches weighed on trade-offs with a recommended path forward, plus the chosen architecture, data flow, integrations, NFRs, and risks — every decision traced to a PRD decision |
-| 5 — Translate to work items | `technical-pm-translate-to-workitems` | Epic → Feature → Story → Task drafts as local Markdown files |
-| 6 — Exec narrative | `technical-pm-exec-narrative` | One-page executive summary derived from the work item plan and PRD |
+| Skill | Output |
+|-------|--------|
+| `technical-pm-capture-demand` | Structured demand note from meeting transcripts, demo notes, or stakeholder emails |
+| `technical-pm-surface-themes` | Clustered theme document, each theme backed by ≥2 demand sources |
+| `technical-pm-write-prd` | Functional PRD with decisions, alternatives rejected, and constraints named |
+| `technical-pm-technical-design` | Candidate approaches weighed on trade-offs with a recommended path forward, plus the chosen architecture, data flow, integrations, NFRs, and risks — every decision traced to a PRD decision |
+| `technical-pm-translate-to-workitems` | Epic → Feature → Story → Task drafts as local Markdown files |
+| `technical-pm-exec-narrative` | One-page executive summary derived from PRD decisions and a work-item plan |
 
 **Additional skills:**
 
@@ -102,7 +100,7 @@ Skills are auto-discovered under `~/.gemini/extensions/<plugin>/skills/`. Subage
 
 ### After installation
 
-Skills are available as slash commands (e.g. `/az-devops`, `/technical-pm-write-prd`, `/planner`). Subagents (`technical-pm`, `explore-scoped`, `update-context`) are available via the agent picker.
+Skills are available as slash commands (e.g. `/az-devops`, `/technical-pm-write-prd`, `/planner`). Subagents (`explore-scoped`, `update-context`) are available via the agent picker.
 
 ## Repository Layout
 
@@ -131,8 +129,6 @@ bx-AI-agents-skills/
 │   ├── .claude-plugin/plugin.json
 │   ├── gemini-extension.json
 │   ├── GEMINI.md
-│   ├── agents/
-│   │   └── technical-pm.md
 │   └── skills/
 │       ├── bx-html-branding/
 │       ├── bx-ppt/
