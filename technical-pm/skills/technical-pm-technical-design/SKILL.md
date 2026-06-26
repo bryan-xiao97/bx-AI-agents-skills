@@ -1,20 +1,20 @@
 ---
 name: technical-pm-technical-design
 description: >
-  Turns a stage-3 functional PRD plus user-supplied technical constraints into a technical design document. Reasons through multiple candidate approaches for each significant design problem, weighs their trade-offs, and recommends a path forward — then records the decisions and specs the chosen architecture (components, data flow, integrations, NFRs, risks). Use whenever the user says "technical design", "design the architecture", "think through the technical considerations", "what are the options", "weigh the trade-offs", "how should we build this", "what's the recommended approach", or is ready to move from a functional PRD to a build-ready design. Every recommendation traces to a PRD decision and the constraints that drove it. Writes to the 4_TechnicalDesign/ folder.
+  Turns a functional PRD — or a problem description the user provides — plus technical constraints into a technical design document. Reasons through multiple candidate approaches for each significant design problem, weighs their trade-offs, and recommends a path forward — then records the decisions and specs the chosen architecture (components, data flow, integrations, NFRs, risks). Use whenever the user says "technical design", "design the architecture", "think through the technical considerations", "what are the options", "weigh the trade-offs", "how should we build this", "what's the recommended approach", or is ready to turn requirements into a build-ready design. Every recommendation traces to a decision or requirement and the constraints that drove it. Writes to the TechnicalDesign/ folder.
 ---
 
 # technical-pm-technical-design
 
-Produces the stage-4 technical design document. The functional PRD says what and why; this works out how — by reasoning through options, not by asserting a single answer. For each significant design problem it lays out candidate approaches, weighs their trade-offs, and recommends one. Every recommendation traces to a PRD decision and the constraints that drove it; nothing is invented.
+Produces a technical design document. The functional requirements say what and why; this works out how — by reasoning through options, not by asserting a single answer. For each significant design problem it lays out candidate approaches, weighs their trade-offs, and recommends one. Every recommendation traces to a decision or requirement and the constraints that drove it; nothing is invented.
 
 ## Workflow
 
-### Step 1 — Confirm upstream exists
+### Step 1 — Gather the requirements
 
-Check for a `3_PRD_Decisions/` document for this product. If none exists, stop and route the user to `/technical-pm-write-prd` first. If a PRD exists but is sparse, proceed with `[TBD]` placeholders and flag the gaps clearly.
+Work from whatever the user provides: a PRD, pasted requirements, or a direct description of the decisions and goals. If they point at a `PRD_Decisions/` folder, read the most recent document. If the input is sparse, proceed with `[TBD]` placeholders and flag the gaps clearly. If nothing is supplied, ask for the requirements before designing.
 
-Read the most recent PRD. Note its decisions, audience, constraints, and success signals — these anchor every technical choice that follows and become the yardstick for comparing approaches.
+Note the decisions, audience, constraints, and success signals in the source material — these anchor every technical choice that follows and become the yardstick for comparing approaches.
 
 ### Step 2 — Gather technical constraints
 
@@ -76,7 +76,7 @@ Present the full draft. Ask the user to:
 
 ### Step 10 — Write the file
 
-Write to `4_TechnicalDesign/`. Filename: `{Product} - Technical Design - {MM.DD}.md`. Report the full path on completion.
+Write to `TechnicalDesign/`. Filename: `{Product} - Technical Design - {MM.DD}.md`. Report the full path on completion.
 
 ---
 
@@ -85,7 +85,7 @@ Write to `4_TechnicalDesign/`. Filename: `{Product} - Technical Design - {MM.DD}
 ````markdown
 # Technical Design — {Product} — {YYYY-MM-DD}
 
-_PRD sourced from: [`3_PRD_Decisions/{prd-filename}`]({relative path})_
+_PRD sourced from: [`PRD_Decisions/{prd-filename}`]({relative path})_
 
 **Priorities driving trade-offs:** {What breaks ties — e.g., time-to-market > cost > operational simplicity. From Step 2.}
 
@@ -128,7 +128,7 @@ _PRD sourced from: [`3_PRD_Decisions/{prd-filename}`]({relative path})_
 
 | Design problem | Chosen approach | Why | Alternatives rejected | PRD decision |
 |---|---|---|---|---|
-| {Problem 1 title} | {Approach X} | {One line} | {The other approaches} | {Decision title from stage-3} |
+| {Problem 1 title} | {Approach X} | {One line} | {The other approaches} | {Decision title from the PRD} |
 | {Problem 2 title} | {Approach Y} | {One line} | {…} | {…} |
 
 ---

@@ -1,7 +1,7 @@
 ---
 name: technical-pm-exec-narrative
 description: >
-  Produces an executive-facing strategy narrative from stage-3 PRD decisions and stage-5 work items. Use whenever the user says "exec brief", "strategy narrative", "prioritization doc", "make this executive", "one-pager for leadership", "what do I tell the partners", "what's the strategy", or needs a one-page summary to share with leadership or stakeholders. Can render in Working, Team, or Executive register. Optionally produces a PowerPoint deck. Writes to the 6_Prioritization_Strategy/ folder.
+  Produces an executive-facing strategy narrative from PRD decisions and a work-item plan — or whatever source material the user provides. Use whenever the user says "exec brief", "strategy narrative", "prioritization doc", "make this executive", "one-pager for leadership", "what do I tell the partners", "what's the strategy", or needs a one-page summary to share with leadership or stakeholders. Can render in Working, Team, or Executive register. Optionally produces a PowerPoint deck. Writes to the Prioritization_Strategy/ folder.
 ---
 
 # technical-pm-exec-narrative
@@ -10,14 +10,14 @@ Produces an exec-facing one-pager that traces from decisions to sequenced delive
 
 ## Workflow
 
-### Step 1 — Confirm upstream artifacts
+### Step 1 — Gather the source material
 
-Read:
-- Most recent file in `3_PRD_Decisions/` → decisions, constraints, success signals
-- `5_Delivery_WorkItems/_index.md` → work item scope and phasing
-- Most recent file in `4_TechnicalDesign/` if present → technical risks worth surfacing to leadership
+Work from whatever the user provides. Useful inputs, if available:
+- Decisions, constraints, and success signals — from a PRD (e.g. a `PRD_Decisions/` file), pasted notes, or a direct description
+- A delivery plan — work item scope and phasing (e.g. a `Delivery_WorkItems/_index.md` file)
+- Technical risks worth surfacing to leadership — from a technical design, if one exists
 
-If a required artifact (PRD or work items) is missing, flag the gap and ask whether to proceed with available material or pause.
+If the core material (decisions or a delivery plan) is missing, ask the user for it or proceed with what is available and flag the gap. Do not invent decisions or phasing.
 
 ### Step 2 — Identify the register
 
@@ -50,7 +50,7 @@ Show the draft. Ask whether tone, scope, and detail level match the intended aud
 
 ### Step 5 — Write the file
 
-Write to `6_Prioritization_Strategy/`. Filename: `{Product} - Strategy Brief - {MM.DD}.md`.
+Write to `Prioritization_Strategy/`. Filename: `{Product} - Strategy Brief - {MM.DD}.md`.
 
 For Executive register: offer to produce a `pptx` deck via the `pptx` skill. Ask before invoking — this is the user's call.
 
@@ -63,7 +63,7 @@ For Executive register: offer to produce a `pptx` deck via the `pptx` skill. Ask
 ```markdown
 # Strategy Brief — {Product} — {YYYY-MM-DD}
 
-_Sources: [`3_PRD_Decisions/{prd-filename}`]({path}), [`5_Delivery_WorkItems/_index.md`]({path})_
+_Sources: [`PRD_Decisions/{prd-filename}`]({path}), [`Delivery_WorkItems/_index.md`]({path})_
 
 ---
 
