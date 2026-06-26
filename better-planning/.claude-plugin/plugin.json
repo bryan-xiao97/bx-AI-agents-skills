@@ -1,7 +1,7 @@
 {
   "name": "better-planning",
   "version": "0.1.0",
-  "description": "Custom planning system with strict role separation — a read-only planner (Opus), a scoped research agent (Haiku), and a sole CLAUDE.md writer (Sonnet). Invoke via /planner <task>.",
+  "description": "Custom planning system with strict role separation — a read-only planner skill (Opus), a scoped research agent (Haiku), and a sole CLAUDE.md writer (Sonnet). The planner and update-context skills activate when you describe a planning or context-refresh task.",
   "author": { "name": "Bryan Xiao", "email": "bryan.li.xiao@gmail.com" },
   "keywords": ["planning", "agents", "claude-md", "coding", "subagents"]
 }
