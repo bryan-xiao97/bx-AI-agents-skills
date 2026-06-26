@@ -1,6 +1,6 @@
 {
   "name": "better-planning",
   "version": "0.1.0",
-  "description": "Custom planning system with strict role separation — a read-only planner, a scoped research agent, and a sole CLAUDE.md writer. Invoke via /planner <task>.",
+  "description": "Custom planning system with strict role separation — a read-only planner skill, a scoped research agent, and a sole CLAUDE.md writer. The planner and update-context skills activate when you describe a planning or context-refresh task.",
   "contextFileName": "GEMINI.md"
 }
