@@ -11,14 +11,14 @@ Custom planning system with strict role separation.
 
 - **planner** (`skills/planner/SKILL.md`) — runs the planner workflow in the main orchestrator (Opus). Activates when you describe a non-trivial implementation, refactor, or feature to plan. Produces a vetted plan, can dispatch explore-scoped for research, and can dispatch the update-context agent when drift is detected.
 - **update-context** (`skills/update-context/SKILL.md`) — ad-hoc CLAUDE.md refresh. Activates when you ask to refresh context or hand over a drift report. Runs a focused mini-audit (or accepts a drift report) and dispatches the update-context agent. Shares a name with the agent it dispatches but is a distinct surface: the skill audits and dispatches, the agent writes.
-- **subagent-driven-development** (`skills/subagent-driven-development/SKILL.md`) — executes an approved plan in-session. Dispatches a fresh implementer subagent per task, runs a spec-and-quality review after each and one broad review at the end, then hands back a completion summary. The planner recommends it once a plan with mostly-independent tasks is approved.
+- **subagent-execution** (`skills/subagent-execution/SKILL.md`) — executes an approved plan in-session. Dispatches a fresh implementer subagent per task, runs a spec-and-quality review after each and one broad review at the end, then hands back a completion summary. The planner recommends it once a plan with mostly-independent tasks is approved.
 
 ## Workflow
 
 1. Start a session. CLAUDE.md loads automatically into the main agent's context.
 2. For non-trivial tasks: describe what you want to plan → the planner skill activates, runs the planning workflow in the orchestrator, and returns a vetted plan with citations.
 3. If the plan ends with "Context Drift Detected," decide: dispatch the update-context agent now (planner will offer), or proceed and refresh later.
-4. To execute the approved plan in-session: the planner recommends the `subagent-driven-development` skill, which runs each task through a fresh implementer subagent and review loop, then summarizes for you.
+4. To execute the approved plan in-session: the planner recommends the `subagent-execution` skill, which runs each task through a fresh implementer subagent and review loop, then summarizes for you.
 5. To maintain CLAUDE.md on a cadence: ask to refresh CLAUDE.md → the update-context skill runs a focused audit, or scope it to a specific area.
 
 ## Design principles
@@ -41,7 +41,7 @@ Custom planning system with strict role separation.
 └── skills/
     ├── planner/SKILL.md
     ├── update-context/SKILL.md
-    └── subagent-driven-development/
+    └── subagent-execution/
         ├── SKILL.md
         ├── implementer-prompt.md
         └── task-reviewer-prompt.md

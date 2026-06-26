@@ -1,5 +1,5 @@
 ---
-name: subagent-driven-development
+name: subagent-execution
 description: Use when you have an approved plan with mostly-independent tasks and want to execute it in the current session with quality gates. Dispatches a fresh implementer subagent per task, runs a per-task spec-and-quality review after each and one broad review across the whole run at the end — then hands you a completion summary. Pairs with the planner skill's output. Triggers on "execute this plan", "run the plan", "implement the plan", "build this out".
 ---
 

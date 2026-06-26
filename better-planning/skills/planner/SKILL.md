@@ -109,6 +109,6 @@ When the user picks option 1, call the `update-context` agent via the Task tool 
 
 ## Recommended execution method
 
-You do not execute the plan — but once the user approves it, point them at how to run it. When the plan's tasks are mostly independent and the user wants to execute in this same session, recommend the `subagent-driven-development` skill: it dispatches a fresh implementer subagent per task, runs a spec-and-quality review after each, runs one broad review at the end, then hands back a completion summary. The small, independently-verifiable units this plan already breaks work into are exactly what that skill consumes.
+You do not execute the plan — but once the user approves it, point them at how to run it. When the plan's tasks are mostly independent and the user wants to execute in this same session, recommend the `subagent-execution` skill: it dispatches a fresh implementer subagent per task, runs a spec-and-quality review after each, runs one broad review at the end, then hands back a completion summary. The small, independently-verifiable units this plan already breaks work into are exactly what that skill consumes.
 
 Skip the recommendation when the tasks are tightly coupled (subagent isolation does not pay off) or when the user wants a separate or parallel execution session instead.

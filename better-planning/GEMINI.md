@@ -6,7 +6,7 @@ Custom planning system with strict role separation. Three roles, three trust bou
 
 - **`planner` skill** — produces a vetted implementation plan grounded in current code. Activates when you describe a non-trivial implementation, refactor, or feature to plan. Runs in the main orchestrator, not a subagent, so it can dispatch the others.
 - **`update-context` skill** — refreshes `CLAUDE.md` from a focused audit (or an inbound drift report). Activates when you ask to refresh context or hand over a drift report.
-- **`subagent-driven-development` skill** — executes an approved plan in the current session. Dispatches a fresh implementer subagent per task, runs a spec-and-quality review after each and one broad review at the end, then hands back a completion summary. The planner recommends it once a plan with mostly-independent tasks is approved. Ships two dispatch templates (`implementer-prompt.md`, `task-reviewer-prompt.md`) beside its `SKILL.md`.
+- **`subagent-execution` skill** — executes an approved plan in the current session. Dispatches a fresh implementer subagent per task, runs a spec-and-quality review after each and one broad review at the end, then hands back a completion summary. The planner recommends it once a plan with mostly-independent tasks is approved. Ships two dispatch templates (`implementer-prompt.md`, `task-reviewer-prompt.md`) beside its `SKILL.md`.
 
 ## Subagents
 
