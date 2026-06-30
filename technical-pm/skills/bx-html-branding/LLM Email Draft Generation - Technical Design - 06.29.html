@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LLM Email Draft Generation — Technical Design</title>
+<meta name="description" content="Technical design for wiring the Buyer Requests 'Generate email' button to Gemini 2.5 Flash — provider tier, server-side execution, synthesis guardrails, and call shape.">
+<style>
+  :root {
+    /* Solomon palette — sourced from sellside-spa/src/styles/tokens.ts */
+    --navy: #141B4D;
+    --navy-deep: #070263;
+    --indigo: #4F4CB1;
+    --sky: #178AE0;
+    --teal: #2FD1B2;
+    --ice: #E3F7FC;
+    --lavender: #EDEAFB;
+    --link: #0E04C7;
+    --ink: #1F2747;
+    --ink-muted: #6B7392;
+    --ink-faint: #9099B4;
+    --surface: #F4F6FB;
+    --card: #FFFFFF;
+    --border: #DDE3F0;
+    --hairline: #EBEBEB;
+    --amber: #C9892E;
+    --amber-text: #8A5A12;
+    --amber-bg: #FBF1DE;
+    --amber-border: #E7C98A;
+    --green-text: #0B3B31;
+    --green-bg: #D7F5EE;
+
+    --serif: 'Iowan Old Style', 'Palatino Linotype', 'Book Antiqua', Palatino, Georgia, 'Times New Roman', serif;
+    --sans: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial, sans-serif;
+    --mono: 'SF Mono', 'Cascadia Code', 'JetBrains Mono', 'Roboto Mono', Consolas, ui-monospace, monospace;
+
+    --measure: 70ch;
+    --gutter: clamp(20px, 5vw, 56px);
+  }
+
+  * { box-sizing: border-box; }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    margin: 0;
+    background: var(--surface);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 17px;
+    line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ---- layout scaffolding ---- */
+  .wrap { max-width: 1060px; margin: 0 auto; padding: 0 var(--gutter); }
+  .col { max-width: var(--measure); }
+  section { padding: clamp(40px, 6vw, 72px) 0 0; }
+  section:last-of-type { padding-bottom: clamp(48px, 8vw, 96px); }
+
+  p { margin: 0 0 1.1em; }
+  a { color: var(--link); text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--sky); outline-offset: 3px; border-radius: 2px; }
+
+  /* ---- eyebrow / labels ---- */
+  .eyebrow {
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--indigo);
+    margin: 0 0 0.9rem;
+    display: flex; align-items: center; gap: 0.6rem;
+  }
+  .eyebrow::before {
+    content: ""; width: 26px; height: 2px; background: var(--teal); display: inline-block;
+  }
+
+  /* ---- headings ---- */
+  h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(1.5rem, 3.2vw, 1.95rem);
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    color: var(--navy);
+    margin: 0 0 0.5em;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: var(--navy);
+    margin: 0 0 0.35em;
+    text-wrap: balance;
+  }
+  .lede { font-size: 1.08rem; color: var(--ink-muted); }
+
+  code, .ref {
+    font-family: var(--mono);
+    font-size: 0.86em;
+    background: var(--lavender);
+    color: var(--navy-deep);
+    padding: 0.1em 0.42em;
+    border-radius: 4px;
+    border: 1px solid #E0DCF6;
+    white-space: nowrap;
+  }
+
+  /* ---- cover sheet ---- */
+  .cover {
+    background: var(--navy);
+    background-image: linear-gradient(180deg, #1A2257 0%, var(--navy) 46%, var(--navy-deep) 100%);
+    color: #EAEDF7;
+    border-top: 3px solid var(--teal);
+    padding: clamp(44px, 7vw, 88px) 0 clamp(36px, 5vw, 60px);
+  }
+  .cover .eyebrow { color: var(--cyan, #85D6F9); }
+  .cover .eyebrow::before { background: var(--teal); }
+  .cover h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(2rem, 6vw, 3.1rem);
+    line-height: 1.06;
+    letter-spacing: -0.018em;
+    margin: 0 0 0.45em;
+    max-width: 18ch;
+    text-wrap: balance;
+    color: #FFFFFF;
+  }
+  .cover .sub {
+    font-size: clamp(1rem, 2.2vw, 1.18rem);
+    color: #BFC6E4;
+    max-width: 56ch;
+    margin: 0 0 2.4rem;
+  }
+  .meta {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .meta div { background: rgba(255,255,255,0.02); padding: 0.85rem 1rem; }
+  .meta dt {
+    font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #8E97C2; margin: 0 0 0.3rem;
+  }
+  .meta dd { margin: 0; font-size: 0.92rem; color: #EAEDF7; }
+
+  /* ---- summary band (decided inputs / priorities) ---- */
+  .band { background: var(--card); border-bottom: 1px solid var(--border); }
+  .grid-2 { display: grid; gap: clamp(20px, 4vw, 44px); grid-template-columns: 1fr; }
+  @media (min-width: 760px) { .grid-2 { grid-template-columns: 1.15fr 1fr; } }
+
+  .deflist { margin: 0; display: grid; gap: 0.65rem; }
+  .deflist .row { display: grid; grid-template-columns: minmax(120px, 0.4fr) 1fr; gap: 1rem; align-items: baseline; padding-bottom: 0.65rem; border-bottom: 1px dotted var(--border); }
+  .deflist .row:last-child { border-bottom: 0; padding-bottom: 0; }
+  .deflist dt { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); }
+  .deflist dd { margin: 0; }
+  .deflist strong { color: var(--navy); }
+
+  .priorities { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1.4rem 1.5rem; }
+  .priorities h4 { margin: 0 0 0.6rem; font-family: var(--sans); font-size: 0.95rem; color: var(--navy); }
+  .chain { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem; margin: 0.4rem 0 1rem; }
+  .pri-pill { font-family: var(--mono); font-size: 0.74rem; padding: 0.28em 0.7em; border-radius: 999px; background: var(--lavender); color: var(--navy-deep); border: 1px solid #E0DCF6; }
+  .pri-pill.lead { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .chain .arrow { color: var(--ink-faint); font-size: 0.8rem; }
+  .floor { font-size: 0.92rem; color: var(--ink-muted); margin: 0; }
+  .floor strong { color: var(--amber-text); }
+
+  /* ---- advisory callout (the headline tension) ---- */
+  .advisory {
+    display: grid; grid-template-columns: auto 1fr; gap: 1rem 1.1rem;
+    background: var(--amber-bg);
+    border: 1px solid var(--amber-border);
+    border-left: 4px solid var(--amber);
+    border-radius: 8px;
+    padding: 1.2rem 1.4rem;
+    margin-top: 2rem;
+  }
+  .advisory .mark { font-family: var(--serif); font-weight: 700; font-size: 1.4rem; color: var(--amber); line-height: 1; }
+  .advisory h4 { margin: 0 0 0.3rem; color: var(--amber-text); font-size: 1.02rem; }
+  .advisory p { margin: 0; color: #6E4D14; font-size: 0.95rem; }
+  .advisory strong { color: var(--amber-text); }
+
+  /* ---- contents index ---- */
+  .toc { display: grid; gap: 0; grid-template-columns: 1fr; margin-top: 1.4rem; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--card); }
+  @media (min-width: 680px) { .toc { grid-template-columns: 1fr 1fr; } }
+  .toc a {
+    display: flex; gap: 0.8rem; align-items: baseline;
+    padding: 0.8rem 1.1rem; text-decoration: none; color: var(--ink);
+    border-bottom: 1px solid var(--hairline);
+    transition: background 120ms ease;
+  }
+  @media (min-width: 680px) { .toc a:nth-child(odd) { border-right: 1px solid var(--hairline); } }
+  .toc a:hover { background: var(--surface); }
+  .toc .n { font-family: var(--mono); font-size: 0.74rem; color: var(--indigo); min-width: 1.6em; }
+  .toc .t { font-size: 0.92rem; }
+
+  /* ---- current-state / context ---- */
+  ul.clean { list-style: none; padding: 0; margin: 0 0 1.1em; display: grid; gap: 0.7rem; }
+  ul.clean > li { position: relative; padding-left: 1.3rem; }
+  ul.clean > li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--sky); }
+  ul.clean.warn > li::before { background: var(--amber); }
+
+  .constraints { background: var(--navy); border-radius: 12px; padding: clamp(20px, 3vw, 30px); margin-top: 1.6rem; }
+  .constraints .eyebrow { color: #85D6F9; }
+  .constraints h3 { color: #fff; }
+  .constraints ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.9rem; }
+  .constraints li { color: #D5DAEE; font-size: 0.95rem; padding-left: 1.4rem; position: relative; }
+  .constraints li::before { content: "§"; position: absolute; left: 0; color: var(--teal); font-family: var(--serif); }
+  .constraints code { background: rgba(133,214,249,0.14); border-color: rgba(133,214,249,0.3); color: #CFE9FF; }
+  .constraints strong { color: #fff; }
+
+  /* ---- problem case files ---- */
+  .problem { border-top: 2px solid var(--navy); padding-top: 1.6rem; margin-top: clamp(40px, 6vw, 72px); }
+  .problem-head { display: flex; gap: 1rem; align-items: baseline; }
+  .pnum { font-family: var(--mono); font-size: 0.82rem; font-weight: 600; color: #fff; background: var(--indigo); border-radius: 6px; padding: 0.2em 0.6em; letter-spacing: 0.04em; flex: none; }
+  .stake { font-size: 0.98rem; color: var(--ink-muted); border-left: 3px solid var(--lavender); padding-left: 1rem; margin: 0.4rem 0 1.6rem; }
+  .stake b { color: var(--navy); font-weight: 600; }
+
+  .approaches { display: grid; gap: 1rem; grid-template-columns: 1fr; margin: 1.2rem 0 1.6rem; }
+  @media (min-width: 720px) { .approaches { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); } }
+  .approach { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.15rem; display: flex; flex-direction: column; gap: 0.7rem; }
+  .approach.rec { border-color: var(--teal); box-shadow: 0 0 0 1px var(--teal); background: linear-gradient(180deg, #F4FCFA 0%, var(--card) 60%); }
+  .approach .a-head { display: flex; align-items: center; gap: 0.6rem; }
+  .approach .badge { font-family: var(--mono); font-weight: 700; font-size: 0.85rem; width: 1.7em; height: 1.7em; display: grid; place-items: center; border-radius: 6px; background: var(--surface); color: var(--navy); border: 1px solid var(--border); flex: none; }
+  .approach.rec .badge { background: var(--teal); color: var(--navy-deep); border-color: var(--teal); }
+  .approach .a-name { font-family: var(--serif); font-size: 1.04rem; color: var(--navy); font-weight: 600; line-height: 1.2; }
+  .approach .reco-tag { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green-text); background: var(--green-bg); padding: 0.2em 0.5em; border-radius: 999px; margin-left: auto; }
+  .approach .killed { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: #7A2E2E; background: #FBE3E3; padding: 0.2em 0.5em; border-radius: 999px; margin-left: auto; }
+  .approach p { font-size: 0.9rem; margin: 0; color: var(--ink); }
+  .pc { font-size: 0.86rem; margin: 0; padding-left: 1.3rem; position: relative; color: var(--ink-muted); }
+  .pc::before { position: absolute; left: 0; font-weight: 700; }
+  .pc.pro::before { content: "+"; color: var(--teal); }
+  .pc.con::before { content: "−"; color: var(--amber); }
+
+  /* ---- tables ---- */
+  .table-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; margin: 1.2rem 0; background: var(--card); }
+  table { border-collapse: collapse; width: 100%; font-size: 0.9rem; }
+  caption { text-align: left; font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); padding: 0.9rem 1rem 0.2rem; }
+  th, td { text-align: left; padding: 0.7rem 0.95rem; vertical-align: top; border-bottom: 1px solid var(--hairline); }
+  thead th { background: var(--surface); color: var(--navy); font-family: var(--sans); font-weight: 600; font-size: 0.82rem; border-bottom: 1px solid var(--border); position: sticky; top: 0; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: #FAFBFE; }
+  th.dim, td.dim { font-weight: 600; color: var(--navy); background: var(--surface); white-space: nowrap; }
+  .col-rec { background: rgba(47,209,178,0.08); }
+  th.col-rec { background: var(--green-bg); color: var(--green-text); }
+  .col-rec-tag { font-family: var(--mono); font-size: 0.6rem; display: block; letter-spacing: 0.08em; color: var(--green-text); margin-top: 0.15rem; }
+  td.bad { color: #7A2E2E; }
+  td.bad strong { color: #7A2E2E; }
+  .tnum { font-variant-numeric: tabular-nums; }
+
+  /* ---- recommendation callout ---- */
+  .recommend { display: grid; grid-template-columns: auto 1fr; gap: 0.5rem 1.1rem; align-items: start; background: linear-gradient(180deg, #F1FBF8 0%, #FBFEFD 100%); border: 1px solid var(--teal); border-left: 4px solid var(--teal); border-radius: 8px; padding: 1.1rem 1.4rem; margin: 1.4rem 0; }
+  .recommend .rl { grid-column: 1 / -1; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--green-text); }
+  .recommend .pick { font-family: var(--serif); font-size: 1.12rem; font-weight: 600; color: var(--navy); grid-column: 1 / -1; margin: 0; }
+  .recommend p { grid-column: 1 / -1; margin: 0.2rem 0 0; font-size: 0.95rem; color: var(--ink); }
+  .recommend .pick .pin { display: inline-grid; place-items: center; width: 1.4em; height: 1.4em; background: var(--teal); color: var(--navy-deep); border-radius: 5px; font-family: var(--mono); font-size: 0.7em; margin-right: 0.4rem; vertical-align: 0.06em; }
+
+  /* ---- data-flow pipeline ---- */
+  .flow { display: grid; gap: 0; margin: 1.4rem 0; }
+  .step { display: grid; grid-template-columns: auto 1fr; gap: 1rem; align-items: stretch; }
+  .step .rail { display: flex; flex-direction: column; align-items: center; }
+  .step .dot { width: 2rem; height: 2rem; flex: none; border-radius: 50%; display: grid; place-items: center; font-family: var(--mono); font-size: 0.82rem; font-weight: 600; background: var(--card); border: 2px solid var(--border); color: var(--navy); }
+  .step .line { flex: 1; width: 2px; background: var(--border); min-height: 0.6rem; }
+  .step:last-child .line { display: none; }
+  .step .body { padding-bottom: 1rem; }
+  .step .body b { color: var(--navy); }
+  .step .body p { margin: 0.1rem 0 0; font-size: 0.92rem; color: var(--ink-muted); }
+  .step.guard .dot { background: var(--teal); border-color: var(--teal); color: var(--navy-deep); }
+  .step.guard .body b { color: var(--green-text); }
+  .step.gate .dot { background: var(--lavender); border-color: var(--indigo); color: var(--navy-deep); }
+  .step.fail .dot { background: var(--amber-bg); border-color: var(--amber); color: var(--amber-text); }
+  .step.fail .body b { color: var(--amber-text); }
+  .flow-key { display: flex; flex-wrap: wrap; gap: 1rem; font-size: 0.78rem; color: var(--ink-muted); margin-top: 0.4rem; }
+  .flow-key span { display: inline-flex; align-items: center; gap: 0.4rem; }
+  .flow-key i { width: 0.85rem; height: 0.85rem; border-radius: 50%; display: inline-block; }
+
+  /* ---- numbered process (data flow narrative) ---- */
+  ol.steps { counter-reset: s; list-style: none; padding: 0; margin: 1.2rem 0; display: grid; gap: 0.75rem; }
+  ol.steps li { counter-increment: s; position: relative; padding-left: 2.6rem; font-size: 0.95rem; }
+  ol.steps li::before { content: counter(s, decimal-leading-zero); position: absolute; left: 0; top: 0; font-family: var(--mono); font-size: 0.78rem; color: var(--indigo); background: var(--lavender); border-radius: 5px; padding: 0.18em 0.45em; }
+
+  /* ---- risk severity ---- */
+  .sev { font-family: var(--mono); font-size: 0.64rem; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.18em 0.5em; border-radius: 4px; white-space: nowrap; }
+  .sev.high { background: #FBE3E3; color: #7A2E2E; }
+  .sev.med { background: var(--amber-bg); color: var(--amber-text); }
+  .sev.low { background: var(--green-bg); color: var(--green-text); }
+
+  /* ---- open questions ---- */
+  .questions { display: grid; gap: 0.8rem; margin-top: 1rem; }
+  .q { display: grid; grid-template-columns: auto 1fr; gap: 0.9rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 0.9rem 1.1rem; }
+  .q .tag { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.08em; color: var(--ink-faint); border: 1px solid var(--border); border-radius: 5px; padding: 0.2em 0.5em; height: fit-content; }
+  .q p { margin: 0; font-size: 0.93rem; }
+
+  /* ---- footer ---- */
+  footer { border-top: 1px solid var(--border); background: var(--card); padding: 2rem 0 3rem; margin-top: 3rem; }
+  footer p { font-size: 0.82rem; color: var(--ink-faint); margin: 0; }
+  footer .src { font-family: var(--mono); }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<header class="cover">
+  <div class="wrap">
+    <p class="eyebrow">Solomon Partners · Sell-Side M&amp;A Platform · Technical Design</p>
+    <h1>LLM Email Draft Generation</h1>
+    <p class="sub">Wiring the Buyer Requests <em>“Generate email”</em> button to Gemini 2.5 Flash — where the call runs, how the data boundary holds, and how the approval guardrails survive moving from concatenation to synthesis.</p>
+    <dl class="meta">
+      <div><dt>Date</dt><dd>2026 · 06 · 29</dd></div>
+      <div><dt>Owner</dt><dd>Bryan Xiao</dd></div>
+      <div><dt>Surface</dt><dd>sellside-spa</dd></div>
+      <div><dt>Status</dt><dd>Decisions confirmed</dd></div>
+    </dl>
+  </div>
+</header>
+
+<!-- decided inputs + priorities -->
+<div class="band">
+  <div class="wrap">
+    <section style="padding-top: clamp(36px,5vw,56px)">
+      <p class="eyebrow">Decided inputs &amp; priorities</p>
+      <div class="grid-2">
+        <dl class="deflist">
+          <div class="row"><dt>Provider</dt><dd><strong>Google Gemini 2.5 Flash</strong> via the Google AI Studio <strong>free</strong> tier, dev and prod (“minimal setup”).</dd></div>
+          <div class="row"><dt>LLM scope</dt><dd><strong>Synthesize</strong> across the approved answers into flowing prose — not concatenation, not greeting-only.</dd></div>
+          <div class="row"><dt>On failure</dt><dd><strong>Surface the error in the UI</strong> — no silent fallback.</dd></div>
+          <div class="row"><dt>Data scope</dt><dd><strong>Synthetic / demo content only</strong> — not intended to receive real client data (MNPI).</dd></div>
+        </dl>
+        <div class="priorities">
+          <h4>What breaks a tie</h4>
+          <div class="chain">
+            <span class="pri-pill lead">Cost &amp; ops simplicity</span>
+            <span class="arrow">›</span>
+            <span class="pri-pill">Draft quality</span>
+            <span class="arrow">›</span>
+            <span class="pri-pill">Time-to-market</span>
+          </div>
+          <p class="floor">Applies cleanly because of one scoping constraint: this surface handles <strong>synthetic/demo content only</strong>, so no MNPI ever reaches the model — which is what makes the free tier’s data-for-training term irrelevant here.</p>
+        </div>
+      </div>
+
+      <div class="advisory" role="note">
+        <div class="mark" aria-hidden="true">§</div>
+        <div>
+          <h4>Scope assumption this design rests on</h4>
+          <p>This surface is <strong>demo-only</strong> — it is not intended to receive real client data. That is what makes the free tier acceptable: on the free tier Google may use prompts and responses to improve its products, which is moot when no MNPI is present. <strong>Guardrail:</strong> if real deal data is ever introduced, revisit the provider tier first — moving to the paid Gemini API or Vertex (where that stops) is a key/endpoint swap, not a code rewrite.</p>
+        </div>
+      </div>
+
+      <nav class="toc" aria-label="Contents">
+        <a href="#today"><span class="n">00</span><span class="t">How it works today &amp; binding constraints</span></a>
+        <a href="#p1"><span class="n">01</span><span class="t">Provider tier &amp; data boundary</span></a>
+        <a href="#p2"><span class="n">02</span><span class="t">Where the Gemini call executes</span></a>
+        <a href="#p3"><span class="n">03</span><span class="t">Guardrail integrity under synthesis</span></a>
+        <a href="#p4"><span class="n">04</span><span class="t">Call shape &amp; failure UX</span></a>
+        <a href="#decisions"><span class="n">▸</span><span class="t">Decision record</span></a>
+        <a href="#arch"><span class="n">▸</span><span class="t">Architecture, components &amp; data flow</span></a>
+        <a href="#nfr"><span class="n">▸</span><span class="t">NFRs, risks &amp; open questions</span></a>
+      </nav>
+    </section>
+    <div style="height: clamp(36px,5vw,56px)"></div>
+  </div>
+</div>
+
+<!-- context -->
+<section id="today">
+  <div class="wrap">
+    <p class="eyebrow">Context</p>
+    <h2>How “Generate email” works today</h2>
+    <div class="col">
+      <ul class="clean">
+        <li>The button (<code>BuyerRequests.tsx:100</code>) is gated by <code>genEnabled</code> — enabled only when every question in a conversation is resolved and at least one is approved (<code>mockStore.ts:79</code>).</li>
+        <li>Click → <code>DealWorkspace.handleGenerate</code> → <code>api.generateEmail(dealId, convId)</code> → returns an <code>EmailDraft</code> → opens <code>EmailModal</code> for review/edit → “Send to my inbox.” <b>The platform never emails the buyer</b>; the banker sends from Outlook.</li>
+        <li><code>api.generateEmail</code> (<code>api.ts:96</code>) already has two backends: the in-memory mock and a real branch that <code>POST</code>s to <code>/api/deals/{id}/conversations/{id}/email</code>. <b>That Azure Function does not exist yet.</b></li>
+        <li><b>There is no LLM today.</b> <code>composeEmail</code> (<code>mockStore.ts:100</code>) is deterministic string templating: filter to <code>approved</code>, prefer the banker’s edit else <code>stripCitations(answer)</code>, concatenate under a fixed greeting/sign-off.</li>
+      </ul>
+    </div>
+
+    <div class="constraints">
+      <p class="eyebrow">Binding constraints — from CLAUDE.md &amp; the codebase</p>
+      <h3>These bind every choice below</h3>
+      <ul>
+        <li>No business logic in components; <code>api.ts</code> is the only data path. The LLM call therefore lives <strong>server-side</strong>, mirrored by the mock — never in the SPA.</li>
+        <li>“Approved-only and citations stripped — <strong>enforced at composition, not by the prompt</strong>.” Asserted in <code>mockStore.ts</code> and the <code>EmailModal</code> banner. The model is never the thing trusted to filter or strip.</li>
+        <li>Content is confidential buyer diligence (revenue, customer concentration, litigation, HIPAA status). Data governance is first-class.</li>
+        <li>A human is always in the loop; nothing is auto-sent — this caps the blast radius of a bad generation.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM 1 -->
+<section id="p1">
+  <div class="wrap">
+    <div class="problem">
+      <div class="problem-head"><span class="pnum">01</span><h2>Provider tier &amp; data boundary</h2></div>
+      <p class="stake"><b>At stake:</b> whether confidential deal data ever transits an endpoint that may use it for training — a hard-to-reverse, reputational mistake. Forced by the “free tier” choice colliding with the sensitivity of the answers.</p>
+
+      <div class="approaches">
+        <div class="approach rec">
+          <div class="a-head"><span class="badge">A</span><span class="a-name">Free AI Studio everywhere</span><span class="reco-tag">Recommended</span></div>
+          <p>One free key, no billing, dev + prod.</p>
+          <p class="pc pro">Zero setup, no card, no cost.</p>
+          <p class="pc con">Free-tier terms allow data to train Google’s products — would fail for MNPI, but moot on a demo-only surface. Tighter limits (~10–15 RPM), fine for single clicks.</p>
+        </div>
+        <div class="approach">
+          <div class="a-head"><span class="badge">B</span><span class="a-name">Free (dev) → Paid Gemini API (prod)</span></div>
+          <p>Same SDK, same model id; flip billing on and swap the key. The escalation path if real data is ever introduced.</p>
+          <p class="pc pro">Paid tier does <em>not</em> train on your data; cost stays sub-cent; higher limits.</p>
+          <p class="pc con">A billing + key-rotation step; unneeded while the surface stays demo-only.</p>
+        </div>
+        <div class="approach">
+          <div class="a-head"><span class="badge">C</span><span class="a-name">Vertex AI (prod)</span></div>
+          <p>Same model via Google Cloud with region pinning, VPC-SC, IAM federation.</p>
+          <p class="pc pro">Strongest governance — residency, network isolation, enterprise IAM.</p>
+          <p class="pc con">Heaviest setup; most at odds with the cost/ops-simplicity priority.</p>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Trade-offs</caption>
+          <thead>
+            <tr><th class="dim">Dimension</th><th class="col-rec">A — Free everywhere<span class="col-rec-tag">✓ recommended</span></th><th>B — Free → Paid</th><th>C — Vertex AI</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="dim">Setup effort</td><td class="col-rec">Lowest</td><td>Low (billing toggle)</td><td>High (GCP / IAM / VPC)</td></tr>
+            <tr><td class="dim">MNPI governance</td><td class="col-rec">N/A — no MNPI here</td><td>Adequate (no training)</td><td>Strongest (+ residency, VPC)</td></tr>
+            <tr><td class="dim">Cost / workload</td><td class="col-rec tnum">$0</td><td class="tnum">~&lt;$0.005 / gen</td><td class="tnum">~&lt;$0.005 + GCP overhead</td></tr>
+            <tr><td class="dim">Tier-switch code change</td><td class="col-rec">n/a</td><td>None (same SDK/model)</td><td>Small (auth + endpoint)</td></tr>
+            <tr><td class="dim">Fit to demo-only scope</td><td class="col-rec">Best</td><td>Unneeded</td><td>Overshoots</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="recommend">
+        <span class="rl">Recommendation</span>
+        <p class="pick"><span class="pin">A</span>Free AI Studio tier, in dev and prod</p>
+        <p>The surface is scoped to synthetic/demo content and is not intended to receive real client data, so the free tier’s data-for-training term doesn’t bind — the MNPI-governance dimension is moot. With that off the table, A wins outright on the stated priority: zero setup, no billing account, no spend; the tighter rate limits are a non-issue for human-driven clicks. <strong>Recorded assumption:</strong> no real deal data (MNPI) ever flows through Generate-email — if that changes, escalate to <strong>B</strong> (paid) or <strong>C</strong> (Vertex), a key/endpoint swap, not a code rewrite.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM 2 -->
+<section id="p2">
+  <div class="wrap">
+    <div class="problem">
+      <div class="problem-head"><span class="pnum">02</span><h2>Where the Gemini call executes</h2></div>
+      <p class="stake"><b>At stake:</b> API-key secrecy and <em>where the approved-only + citation-strip guardrails physically run</em>. Forced by “no business logic in components / <code>api.ts</code> is the only data path” and the “not by the prompt” rule.</p>
+
+      <div class="approaches">
+        <div class="approach rec">
+          <div class="a-head"><span class="badge">A</span><span class="a-name">Server-side Azure Function</span><span class="reco-tag">Recommended</span></div>
+          <p>The existing <code>POST /api/…/email</code> route holds the key, filters/strips, calls Gemini, returns an <code>EmailDraft</code>.</p>
+          <p class="pc pro">Key never reaches the browser; guardrails in a trusted boundary; zero SPA change.</p>
+          <p class="pc con">Requires standing up the Function (doesn’t exist yet).</p>
+        </div>
+        <div class="approach">
+          <div class="a-head"><span class="badge">B</span><span class="a-name">Browser-direct</span><span class="killed">Disqualified</span></div>
+          <p>SPA calls Gemini with a key in a <code>VITE_*</code> env var.</p>
+          <p class="pc pro">No backend — superficially the most “minimal.”</p>
+          <p class="pc con"><code>VITE_*</code> is baked into the bundle: key visible in devtools, no spend ceiling. Guardrails would run in untrusted client JS — violates both binding rules.</p>
+        </div>
+        <div class="approach">
+          <div class="a-head"><span class="badge">C</span><span class="a-name">Local proxy (dev) + Function</span></div>
+          <p>A Vite dev-middleware or local Functions host serves the same route for local iteration.</p>
+          <p class="pc pro">Exercise the real LLM path without cloud infra; identical contract to prod.</p>
+          <p class="pc con">A little dev plumbing.</p>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Trade-offs</caption>
+          <thead>
+            <tr><th class="dim">Dimension</th><th class="col-rec">A — Azure Function<span class="col-rec-tag">✓ recommended</span></th><th>B — Browser-direct</th><th>C — Local proxy + Fn</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="dim">API-key secrecy</td><td class="col-rec">Safe</td><td class="bad"><strong>Exposed</strong></td><td>Safe</td></tr>
+            <tr><td class="dim">Guardrails in trusted boundary</td><td class="col-rec">Yes</td><td class="bad">No</td><td>Yes</td></tr>
+            <tr><td class="dim">Fits <code>api.ts</code>-only + “not by prompt”</td><td class="col-rec">Yes</td><td class="bad">No</td><td>Yes</td></tr>
+            <tr><td class="dim">SPA / component changes</td><td class="col-rec">None</td><td>Some</td><td>None</td></tr>
+            <tr><td class="dim">Local-dev ergonomics</td><td class="col-rec">Needs a host</td><td>Trivial</td><td>Best</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="recommend">
+        <span class="rl">Recommendation</span>
+        <p class="pick"><span class="pin">A</span>Azure Function, with C as the dev convenience</p>
+        <p>B is off the table on key exposure alone, regardless of the simplicity pull. The server endpoint already exists as a contract in <code>api.ts</code>; we implement the Function behind it. The <strong>mock path stays LLM-free</strong> so unit tests remain deterministic and offline — and it doubles as a documented “basic draft” fallback.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM 3 -->
+<section id="p3">
+  <div class="wrap">
+    <div class="problem">
+      <div class="problem-head"><span class="pnum">03</span><h2>Guardrail integrity under synthesis</h2></div>
+      <p class="stake"><b>At stake:</b> with the model now writing prose, a buyer-facing email could re-introduce <code>[cN]</code> markers, include a rejected answer, or <em>invent or distort a figure</em>. Forced by the synthesize scope against the “enforced at composition” rule. <em>All approaches keep the same mandatory input layer: code filters to approved + strips citations</em> before <em>the prompt — the model never sees rejected items or markers.</em></p>
+
+      <div class="approaches">
+        <div class="approach">
+          <div class="a-head"><span class="badge">A</span><span class="a-name">Prompt-only + review</span></div>
+          <p>Grounding instructions plus the banker’s review.</p>
+          <p class="pc pro">Cheapest, one call.</p>
+          <p class="pc con">No deterministic backstop if the model emits a stray <code>[c1]</code>.</p>
+        </div>
+        <div class="approach rec">
+          <div class="a-head"><span class="badge">B</span><span class="a-name">Prompt + deterministic post-process</span><span class="reco-tag">Recommended</span></div>
+          <p>Re-run <code>stripCitations()</code> on the <em>output</em>; validate shape; error on failure.</p>
+          <p class="pc pro">Citation-stripping stays a <em>code</em> guarantee on input <em>and</em> output. Cheap.</p>
+          <p class="pc con">Faithfulness is mitigated, not guaranteed — see note.</p>
+        </div>
+        <div class="approach">
+          <div class="a-head"><span class="badge">C</span><span class="a-name">+ LLM-judge verification</span></div>
+          <p>A second call compares draft vs. source for unsupported claims.</p>
+          <p class="pc pro">Strongest automated faithfulness check.</p>
+          <p class="pc con">Doubles cost/latency + orchestration; marginal given the human gate.</p>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Trade-offs</caption>
+          <thead>
+            <tr><th class="dim">Dimension</th><th>A — Prompt only</th><th class="col-rec">B — Prompt + post-process<span class="col-rec-tag">✓ recommended</span></th><th>C — + LLM judge</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="dim">Citation-leak guarantee</td><td>Prompt-dependent</td><td class="col-rec"><strong>Deterministic</strong></td><td>Deterministic</td></tr>
+            <tr><td class="dim">Faithfulness assurance</td><td>Review only</td><td class="col-rec">Prompt + review</td><td>Prompt + review + judge</td></tr>
+            <tr><td class="dim">Cost / latency</td><td>1 call</td><td class="col-rec">1 call</td><td>2 calls</td></tr>
+            <tr><td class="dim">Fit to cost-simplicity</td><td>Good</td><td class="col-rec">Best balance</td><td>Poor</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="recommend">
+        <span class="rl">Recommendation</span>
+        <p class="pick"><span class="pin">B</span>Deterministic filter/strip on both sides; review for faithfulness</p>
+        <p>Keep the input filter (mandatory), re-apply <code>stripCitations()</code> to the output as belt-and-suspenders, validate shape, and use a grounding prompt at low temperature (~0.2). <strong>Honest limitation:</strong> faithfulness of synthesized prose is the one property code can’t enforce deterministically — the controls are the grounding prompt, low temperature, and the mandatory banker review before any send. Defer C until real-data experience shows review is insufficient.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROBLEM 4 -->
+<section id="p4">
+  <div class="wrap">
+    <div class="problem">
+      <div class="problem-head"><span class="pnum">04</span><h2>Call shape &amp; failure UX</h2></div>
+      <p class="stake"><b>At stake:</b> complexity vs. perceived latency, and how the error reaches the banker. Forced by the failure decision (“show the error in the UI”) against the existing button → modal flow.</p>
+
+      <div class="approaches">
+        <div class="approach rec">
+          <div class="a-head"><span class="badge">A</span><span class="a-name">Synchronous request/response</span><span class="reco-tag">Recommended</span></div>
+          <p>Button shows a loading state, awaits the full draft, opens the modal.</p>
+          <p class="pc pro">Zero transport change; matches today’s <code>await api.generateEmail</code>; Flash returns in seconds.</p>
+          <p class="pc con">Button spins a few seconds with no partial output.</p>
+        </div>
+        <div class="approach">
+          <div class="a-head"><span class="badge">B</span><span class="a-name">Streaming (SSE)</span></div>
+          <p>Modal opens immediately; tokens stream in.</p>
+          <p class="pc pro">Better perceived latency.</p>
+          <p class="pc con">New transport + incremental render + harder abort/error — for a draft acted on only when complete.</p>
+        </div>
+      </div>
+
+      <div class="table-scroll">
+        <table>
+          <caption>Trade-offs</caption>
+          <thead>
+            <tr><th class="dim">Dimension</th><th class="col-rec">A — Synchronous<span class="col-rec-tag">✓ recommended</span></th><th>B — Streaming</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="dim">Transport / contract change</td><td class="col-rec">None</td><td>New (SSE)</td></tr>
+            <tr><td class="dim">Modal rendering change</td><td class="col-rec">Add loading + error state</td><td>Incremental render</td></tr>
+            <tr><td class="dim">Perceived latency</td><td class="col-rec">A few seconds</td><td>Better</td></tr>
+            <tr><td class="dim">Fit to existing flow + cost</td><td class="col-rec">Best</td><td>Poor</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="recommend">
+        <span class="rl">Recommendation</span>
+        <p class="pick"><span class="pin">A</span>Synchronous, with a loading and error state</p>
+        <p>Keep the synchronous contract. Add a loading state on the button and a client timeout (~30 s). On failure the Function returns a structured <code>{ status, message }</code>; <code>api.ts</code> already throws <code>ApiError</code> (<code>api.ts:46</code>) — extend the <code>DealWorkspace</code> handler to render an error state with the message + Retry. <code>EmailModal</code> renders only when a draft exists, so the error UI belongs in the generate handler, not inside the modal.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DECISION RECORD -->
+<section id="decisions">
+  <div class="wrap">
+    <p class="eyebrow">The spine</p>
+    <h2>Decision record</h2>
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th class="dim">Design problem</th><th>Chosen</th><th>Why</th><th>Rejected</th><th>Decision served</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="dim">01 · Provider tier &amp; data boundary</td><td><strong>A</strong> — Free AI Studio tier (dev + prod)</td><td>Surface is demo-only, so the training term doesn’t bind; wins on zero setup + zero cost</td><td>B (paid — unneeded without real data); C (overshoots)</td><td>Gemini 2.5 Flash + minimal setup + demo-only scope</td></tr>
+          <tr><td class="dim">02 · Where the call executes</td><td><strong>A</strong> — Azure Function (+ local proxy)</td><td>Key off the client; guardrails trusted; no SPA change</td><td>B (key exposure, untrusted guardrails)</td><td><code>api.ts</code>-only; “not by the prompt”</td></tr>
+          <tr><td class="dim">03 · Guardrail under synthesis</td><td><strong>B</strong> — Filter/strip + post-process</td><td>Citation-strip stays a code guarantee both sides; human gate covers faithfulness</td><td>A (no backstop); C (cost vs. human-in-loop)</td><td>Synthesize + “approved-only / stripped in code”</td></tr>
+          <tr><td class="dim">04 · Call shape &amp; failure UX</td><td><strong>A</strong> — Synchronous + loading/error</td><td>No transport change; fits the modal flow; surfaces the error</td><td>B (streaming — new infra, marginal gain)</td><td>Failure = surface error; cost/ops simplicity</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="arch">
+  <div class="wrap">
+    <p class="eyebrow">System architecture</p>
+    <h2>The path of a generated draft</h2>
+    <p class="col lede">The SPA contract is unchanged — <code>api.generateEmail</code> still returns <code>Promise&lt;EmailDraft|null&gt;</code>. A new server-side Function does the real work; the two teal steps are the deterministic guardrails that keep the “enforced at composition, not by the prompt” guarantee intact.</p>
+
+    <div class="flow" role="list" aria-label="Data flow">
+      <div class="step gate" role="listitem"><div class="rail"><div class="dot">1</div><div class="line"></div></div><div class="body"><b>SPA → api.ts → POST /api/…/email</b><p>Button (loading state) → <code>handleGenerate</code> → <code>api.generateEmail</code>; Entra bearer token attached. Mock branch stays deterministic for tests/offline.</p></div></div>
+      <div class="step gate" role="listitem"><div class="rail"><div class="dot">2</div><div class="line"></div></div><div class="body"><b>Function re-checks the approval gate</b><p>resolved == total &amp;&amp; approved &gt; 0. Gate closed → returns <code>200 null</code> (mirrors <code>composeEmail</code>).</p></div></div>
+      <div class="step guard" role="listitem"><div class="rail"><div class="dot">3</div><div class="line"></div></div><div class="body"><b>Deterministic filter — approved only, citations stripped</b><p>Prefer the banker’s edit, else <code>stripCitations(answer)</code>. This is the only content the model is ever allowed to see.</p></div></div>
+      <div class="step" role="listitem"><div class="rail"><div class="dot">4</div><div class="line"></div></div><div class="body"><b>Build the grounded prompt</b><p>Question + clean-answer pairs, the contact, the house tone. Answer text is treated as data, not instructions.</p></div></div>
+      <div class="step" role="listitem"><div class="rail"><div class="dot">5</div><div class="line"></div></div><div class="body"><b>Call Gemini 2.5 Flash</b><p>Key from Function config / Key Vault. Temperature ~0.2 to curb drift.</p></div></div>
+      <div class="step guard" role="listitem"><div class="rail"><div class="dot">6</div><div class="line"></div></div><div class="body"><b>Deterministic post-process — strip + validate</b><p><code>stripCitations()</code> on the output (belt-and-suspenders) + non-empty / length / sign-off checks.</p></div></div>
+      <div class="step" role="listitem"><div class="rail"><div class="dot">7</div><div class="line"></div></div><div class="body"><b>Assemble &amp; return the EmailDraft</b><p><code>{ to, subject, body, approvedCount }</code> → <code>200</code> → <code>EmailModal</code> opens for review → banker sends from Outlook.</p></div></div>
+      <div class="step fail" role="listitem"><div class="rail"><div class="dot">!</div><div class="line"></div></div><div class="body"><b>Any failure → structured error</b><p><code>{ status, message }</code> → <code>ApiError</code> in the SPA → error state with message + Retry. Client timeout ~30 s.</p></div></div>
+    </div>
+    <div class="flow-key">
+      <span><i style="background:#EDEAFB;border:2px solid #4F4CB1"></i> gate / transport</span>
+      <span><i style="background:#2FD1B2"></i> deterministic guardrail</span>
+      <span><i style="background:#FBF1DE;border:2px solid #C9892E"></i> failure path</span>
+    </div>
+
+    <h3 style="margin-top:2.4rem">Components</h3>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th class="dim">Component</th><th>Purpose</th></tr></thead>
+        <tbody>
+          <tr><td class="dim">Button + <code>DealWorkspace.handleGenerate</code></td><td>Trigger generation; own loading + error UI state (no business logic)</td></tr>
+          <tr><td class="dim"><code>EmailModal</code></td><td>Review/edit the returned draft; “Send to my inbox” (banner copy to update — see risks)</td></tr>
+          <tr><td class="dim"><code>services/api.ts</code> → <code>generateEmail</code></td><td>Single data path; mock vs. real branch; maps non-OK to <code>ApiError</code></td></tr>
+          <tr><td class="dim"><code>mockStore.composeEmail</code></td><td>Deterministic, LLM-free composer — test/offline backend and documented fallback</td></tr>
+          <tr><td class="dim"><strong>Azure Function <code>generateEmail</code></strong> <em>(new)</em></td><td>Gate re-check → filter/strip → prompt → Gemini → post-strip/validate → <code>EmailDraft</code></td></tr>
+          <tr><td class="dim"><strong>Gemini client wrapper</strong> <em>(new)</em></td><td>Holds model id + params; issues the call; normalizes errors/timeouts</td></tr>
+          <tr><td class="dim"><code>domain.stripCitations</code></td><td>Reused for the deterministic strip on input <em>and</em> output</td></tr>
+          <tr><td class="dim">Function config / Key Vault</td><td>Stores the Gemini key — never in the SPA bundle</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 style="margin-top:2.4rem">Data flow</h3>
+    <ol class="steps">
+      <li>Banker resolves all questions; the gate opens (<code>mockStore.ts:79</code>) and the button enables.</li>
+      <li>Click → <code>handleGenerate</code> sets loading → <code>api.generateEmail(dealId, convId)</code>.</li>
+      <li><code>api.ts</code> (real branch) <code>POST</code>s to the Function with the Entra bearer token.</li>
+      <li>Function re-checks the gate; if closed, returns <code>200 null</code>.</li>
+      <li>Function filters to approved, prefers the banker’s edit, else strips citations — the model’s allowed input.</li>
+      <li>Function builds the grounded prompt and calls Gemini 2.5 Flash (temp ~0.2).</li>
+      <li>Function strips citations on the output, validates, assembles the <code>EmailDraft</code>.</li>
+      <li>Success → modal opens. Failure → <code>ApiError</code> → error state + Retry.</li>
+      <li>Banker edits → “Send to my inbox” → reviews and sends from <strong>Outlook</strong> (platform never sends).</li>
+    </ol>
+
+    <h3 style="margin-top:2.4rem">Integration points &amp; dependencies</h3>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th class="dim">System / API</th><th>Direction</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td class="dim">Google Gemini API (AI Studio → paid → Vertex)</td><td>Out</td><td>Function sends the grounded prompt, receives the synthesized body</td></tr>
+          <tr><td class="dim">Microsoft Entra ID (MSAL)</td><td>In</td><td>Bearer token on the <code>/api/…</code> call authenticates the banker</td></tr>
+          <tr><td class="dim">Azure Functions config / Key Vault</td><td>In</td><td>Supplies the Gemini key at runtime; never exposed to the client</td></tr>
+          <tr><td class="dim">Outlook (manual)</td><td>Out · human</td><td>Banker sends the reviewed draft from their own inbox — outside this system</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="col" style="font-size:0.92rem;color:var(--ink-muted)"><strong style="color:var(--navy)">Upstream</strong> (this relies on): the produced answers + banker decisions/edits, the Gemini API, the Functions runtime, Entra ID, <code>domain.stripCitations</code>. &nbsp;<strong style="color:var(--navy)">Downstream</strong> (relies on this): <code>EmailModal</code> and the banker’s manual Outlook send; the mock path and tests depend on <code>composeEmail</code> staying deterministic.</p>
+  </div>
+</section>
+
+<!-- NFRs / RISKS / QUESTIONS -->
+<section id="nfr">
+  <div class="wrap">
+    <p class="eyebrow">Non-functional requirements</p>
+    <h2>Targets, observable not aspirational</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th class="dim">Requirement</th><th>Target</th></tr></thead>
+        <tbody>
+          <tr><td class="dim">Latency</td><td>p95 end-to-end &lt; ~6 s for ≤ ~15 approved answers</td></tr>
+          <tr><td class="dim">Cost</td><td>&lt; $0.01 per generation (paid tier); track monthly spend per deal</td></tr>
+          <tr><td class="dim">Data scope</td><td>Surface processes <strong>synthetic/demo content only</strong>; no MNPI is introduced — the basis on which the free tier is acceptable. If real data is ever needed, move to the paid tier first</td></tr>
+          <tr><td class="dim">Key secrecy</td><td>Key only in Function config / Key Vault; <strong>zero</strong> <code>VITE_*</code> exposure; verified by a CI bundle grep</td></tr>
+          <tr><td class="dim">Citation safety</td><td>Output contains zero <code>[cN]</code> markers — guaranteed by post-strip + unit test</td></tr>
+          <tr><td class="dim">Approval-gate safety</td><td>Function returns <code>null</code> when the gate is closed, identical to <code>composeEmail</code> — covered by a test</td></tr>
+          <tr><td class="dim">Availability / failure</td><td>Client timeout ~30 s; clear error + Retry; deterministic <code>composeEmail</code> remains an always-available path</td></tr>
+          <tr><td class="dim">Rate limits</td><td>Human-driven clicks stay under free-tier caps (~10–15 RPM); paid lifts them; surface <code>429</code> as a retry hint</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="eyebrow" style="margin-top:2.6rem">Risks &amp; mitigations</p>
+    <h2>What could derail it</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr><th style="width:7rem">Severity</th><th class="dim">Risk</th><th>Mitigation</th></tr></thead>
+        <tbody>
+          <tr><td><span class="sev low">Low</span></td><td class="dim">Real client data (MNPI) later introduced to this demo-only surface</td><td>Treat “synthetic/demo data only” as a recorded boundary assumption; if it changes, switch to the paid Gemini API / Vertex (a key/endpoint swap) before any real data flows</td></tr>
+          <tr><td><span class="sev high">High</span></td><td class="dim">Synthesis hallucinates or distorts a figure</td><td>Grounding prompt (“use only provided content, reproduce figures exactly”), temp ~0.2, and the mandatory banker review before any send; revisit an LLM-judge pass only if review proves insufficient</td></tr>
+          <tr><td><span class="sev med">Medium</span></td><td class="dim">Model re-introduces <code>[cN]</code> or other citations</td><td>Deterministic <code>stripCitations()</code> on the output (not the prompt) + unit test asserting no markers survive</td></tr>
+          <tr><td><span class="sev med">Medium</span></td><td class="dim">Gemini key leaked to the client</td><td>Server-side only; key in config/Key Vault; CI check that the bundle contains no key / <code>VITE_*</code> secret</td></tr>
+          <tr><td><span class="sev med">Medium</span></td><td class="dim">Prompt injection via answer/question text</td><td>Treat answer/question text as data, not instructions (structured prompt, system role); residual risk low because content is banker-approved upstream</td></tr>
+          <tr><td><span class="sev low">Low</span></td><td class="dim">Free-tier rate-limit / quota cuts</td><td>Low human-driven volume; surface <code>429</code> as a retry; paid tier raises limits</td></tr>
+          <tr><td><span class="sev low">Low</span></td><td class="dim">Non-determinism breaks tests</td><td>Tests run against the deterministic mock, never live Gemini; the Function’s filter/strip/gate logic is unit-tested in isolation</td></tr>
+          <tr><td><span class="sev low">Low</span></td><td class="dim"><code>EmailModal</code> banner copy now inaccurate</td><td>Update <code>EmailModal.tsx:39-43</code> + <code>mockStore.ts</code> comments: email is <em>synthesized</em> from N approved answers; rejected/unanswerable omitted and citations stripped in code before <em>and</em> after the model</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="eyebrow" style="margin-top:2.6rem">Open technical questions</p>
+    <h2>Answer before implementation</h2>
+    <div class="questions">
+      <div class="q"><span class="tag">TBD</span><p>Exact model id + SDK for Gemini 2.5 Flash in the Function (e.g. <code>gemini-2.5-flash</code>), and whether to pin a dated/stable alias.</p></div>
+      <div class="q"><span class="tag">TBD</span><p>What persistence does the Function read decisions/edits from in production? (Out of scope here, but the email Function depends on it.)</p></div>
+      <div class="q"><span class="tag">TBD</span><p>House style for the synthesized email — tone, length, structure. Needs banker input + 2–3 golden examples to anchor the system prompt and a regression check.</p></div>
+      <div class="q"><span class="tag">TBD</span><p>Keep the deterministic <code>composeEmail</code> as a <em>user-visible</em> “basic draft” fallback button, or error-only? (You chose error-only; the fallback is nearly free since the code exists — flagged for reconsideration.)</p></div>
+      <div class="q"><span class="tag">Resolved</span><p>Provider tier: free AI Studio tier in dev and prod, on the recorded assumption the surface stays demo-only. Revisit (paid Gemini API / Vertex) only if real client data is ever introduced.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>Technical Design — LLM Email Draft Generation · 2026-06-29 · Solomon Partners sell-side M&amp;A platform</p>
+    <p class="src">Sources: sellside-spa/src/services/{api,mockStore}.ts · features/buyerRequests/EmailModal.tsx · types/domain.ts · CLAUDE.md</p>
+  </div>
+</footer>
+
+</body>
+</html>

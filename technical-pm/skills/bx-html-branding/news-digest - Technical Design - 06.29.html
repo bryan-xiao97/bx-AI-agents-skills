@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Technical Design — Add TechCrunch RSS Source — news-digest</title>
+    <style>
+      /* ==========================================================================
+         bx-html-branding — house style (inlined for portability)
+         ========================================================================== */
+      :root {
+        --color-charcoal: #2b2b2b;
+        --color-coral: #fe5f55;
+        --color-caramel: #f0b67f;
+        --color-sand: #d6d1b1;
+        --color-tea: #c7efcf;
+        --color-beige: #eef5db;
+        --color-white: #ffffff;
+
+        --color-text: var(--color-charcoal);
+        --color-text-muted: #595959;
+        --color-bg: var(--color-white);
+        --color-bg-tint: #fbfcf7;
+        --color-accent: var(--color-coral);
+        --color-rule: var(--color-sand);
+        --color-rule-soft: #ece8d4;
+
+        --font-sans: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
+          Arial, sans-serif;
+        --text-meta: 0.8125rem;
+        --text-body: 1rem;
+        --text-lead: 1.1875rem;
+        --text-h3: 1.1875rem;
+        --text-h2: 1.5rem;
+        --text-h1: 2rem;
+        --text-eyebrow: 0.75rem;
+        --leading-body: 1.65;
+
+        --measure: 42rem;
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-12: 3rem;
+
+        --radius: 10px;
+        --bar-width: 4px;
+
+        --duration: 150ms;
+        --ease: cubic-bezier(0.16, 1, 0.3, 1);
+      }
+
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+
+      html {
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        margin: 0;
+        background: var(--color-bg-tint);
+        color: var(--color-text);
+        font-family: var(--font-sans);
+        font-size: var(--text-body);
+        line-height: var(--leading-body);
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .doc {
+        max-width: var(--measure);
+        margin: var(--space-12) auto;
+        padding: var(--space-12) var(--space-8);
+        background: var(--color-white);
+        border: 1px solid var(--color-rule-soft);
+        border-radius: var(--radius);
+        box-shadow: 0 1px 2px rgba(43, 43, 43, 0.04),
+          0 8px 30px rgba(43, 43, 43, 0.05);
+      }
+
+      .doc--wide {
+        max-width: 56rem;
+      }
+
+      .doc-eyebrow {
+        margin: 0 0 var(--space-2);
+        font-size: var(--text-eyebrow);
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+      }
+
+      .doc-title {
+        margin: 0 0 var(--space-4);
+        font-size: var(--text-h1);
+        font-weight: 600;
+        line-height: 1.15;
+        letter-spacing: -0.01em;
+      }
+
+      .doc-meta {
+        display: grid;
+        grid-template-columns: max-content 1fr;
+        gap: var(--space-1) var(--space-4);
+        margin: 0 0 var(--space-8);
+        padding: var(--space-4) 0;
+        border-top: 1px solid var(--color-rule);
+        border-bottom: 1px solid var(--color-rule);
+        font-size: var(--text-meta);
+      }
+      .doc-meta dt {
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+      }
+      .doc-meta dd {
+        margin: 0;
+      }
+
+      .lead {
+        font-size: var(--text-lead);
+        line-height: 1.55;
+        color: var(--color-text);
+        margin: 0 0 var(--space-8);
+      }
+
+      h2,
+      .h2 {
+        position: relative;
+        margin: var(--space-12) 0 var(--space-4);
+        padding-left: var(--space-4);
+        font-size: var(--text-h2);
+        font-weight: 600;
+        line-height: 1.25;
+        letter-spacing: -0.005em;
+      }
+      h2::before,
+      .h2::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0.15em;
+        bottom: 0.15em;
+        width: var(--bar-width);
+        border-radius: 2px;
+        background: var(--color-caramel);
+      }
+
+      h3,
+      .h3 {
+        margin: var(--space-8) 0 var(--space-2);
+        font-size: var(--text-h3);
+        font-weight: 600;
+        line-height: 1.3;
+      }
+
+      p {
+        margin: 0 0 var(--space-4);
+      }
+
+      a {
+        color: var(--color-charcoal);
+        text-decoration: underline;
+        text-decoration-color: var(--color-caramel);
+        text-underline-offset: 2px;
+        text-decoration-thickness: 2px;
+        transition: text-decoration-color var(--duration) var(--ease);
+      }
+      a:hover {
+        text-decoration-color: var(--color-coral);
+      }
+
+      strong {
+        font-weight: 600;
+      }
+
+      .label {
+        font-weight: 600;
+        text-decoration: underline;
+        text-decoration-color: var(--color-sand);
+        text-underline-offset: 2px;
+      }
+
+      .accent {
+        color: var(--color-coral);
+        font-weight: 600;
+      }
+
+      ul,
+      ol {
+        margin: 0 0 var(--space-4);
+        padding-left: var(--space-6);
+      }
+      li {
+        margin-bottom: var(--space-2);
+      }
+      li::marker {
+        color: var(--color-caramel);
+      }
+
+      .callout {
+        margin: var(--space-6) 0;
+        padding: var(--space-4) var(--space-6);
+        background: var(--color-tea);
+        border-left: var(--bar-width) solid var(--color-caramel);
+        border-radius: 0 var(--radius) var(--radius) 0;
+      }
+      .callout > :last-child {
+        margin-bottom: 0;
+      }
+      .callout-title {
+        margin: 0 0 var(--space-2);
+        font-size: var(--text-meta);
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+      }
+
+      .callout--beige {
+        background: var(--color-beige);
+      }
+
+      .callout--key {
+        background: var(--color-beige);
+        border-left-color: var(--color-coral);
+      }
+
+      .stat-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+        gap: var(--space-4);
+        margin: var(--space-8) 0;
+      }
+      .stat {
+        padding: var(--space-4) var(--space-6);
+        background: var(--color-beige);
+        border-radius: var(--radius);
+      }
+      .stat--tea {
+        background: var(--color-tea);
+      }
+      .stat-value {
+        display: block;
+        font-size: 1.75rem;
+        font-weight: 600;
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+      }
+      .stat-label {
+        display: block;
+        margin-top: var(--space-1);
+        font-size: var(--text-meta);
+        color: var(--color-text-muted);
+      }
+      .stat--accent .stat-value {
+        color: var(--color-coral);
+      }
+
+      table {
+        width: 100%;
+        margin: var(--space-6) 0;
+        border-collapse: collapse;
+        font-size: 0.9375rem;
+      }
+      caption {
+        margin-bottom: var(--space-2);
+        font-size: var(--text-meta);
+        color: var(--color-text-muted);
+        text-align: left;
+      }
+      th {
+        padding: var(--space-2) var(--space-3);
+        text-align: left;
+        font-weight: 600;
+        border-bottom: 2px solid var(--color-sand);
+      }
+      td {
+        padding: var(--space-2) var(--space-3);
+        border-bottom: 1px solid var(--color-rule-soft);
+        vertical-align: top;
+      }
+      tbody tr:nth-child(even) {
+        background: var(--color-bg-tint);
+      }
+
+      .tag {
+        display: inline-block;
+        padding: 0.1rem var(--space-3);
+        border-radius: 999px;
+        background: var(--color-sand);
+        font-size: var(--text-meta);
+        font-weight: 600;
+        line-height: 1.6;
+      }
+      .tag--tea {
+        background: var(--color-tea);
+      }
+      .tag--accent {
+        background: var(--color-coral);
+        color: var(--color-white);
+      }
+
+      hr {
+        margin: var(--space-12) 0;
+        border: 0;
+        border-top: 1px solid var(--color-rule);
+      }
+
+      .doc-footer {
+        margin-top: var(--space-12);
+        padding-top: var(--space-4);
+        border-top: 1px solid var(--color-rule);
+        font-size: var(--text-meta);
+        color: var(--color-text-muted);
+        display: flex;
+        justify-content: space-between;
+        gap: var(--space-4);
+      }
+
+      /* Monospace block for the architecture diagram */
+      .diagram {
+        margin: var(--space-6) 0;
+        padding: var(--space-6);
+        background: var(--color-bg-tint);
+        border: 1px solid var(--color-rule-soft);
+        border-radius: var(--radius);
+        overflow-x: auto;
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 0.8125rem;
+        line-height: 1.5;
+        white-space: pre;
+        color: var(--color-text);
+      }
+
+      code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        font-size: 0.875em;
+        padding: 0.05em 0.3em;
+        background: var(--color-bg-tint);
+        border: 1px solid var(--color-rule-soft);
+        border-radius: 4px;
+      }
+
+      @media print {
+        :root {
+          --measure: 100%;
+        }
+        body {
+          background: var(--color-white);
+        }
+        .doc {
+          margin: 0;
+          max-width: none;
+          border: 0;
+          border-radius: 0;
+          box-shadow: none;
+          padding: 0;
+        }
+        h2,
+        h3 {
+          break-after: avoid;
+        }
+        .callout,
+        .stat,
+        table,
+        figure,
+        .diagram {
+          break-inside: avoid;
+        }
+        a {
+          text-decoration-color: var(--color-sand);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+
+      @media (max-width: 40rem) {
+        .doc {
+          margin: 0;
+          padding: var(--space-8) var(--space-6);
+          border: 0;
+          border-radius: 0;
+        }
+        .doc-meta {
+          grid-template-columns: 1fr;
+        }
+        .doc-footer {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="doc">
+      <header>
+        <p class="doc-eyebrow">Technical Design</p>
+        <h1 class="doc-title">
+          Add a TechCrunch RSS source to news-digest
+        </h1>
+
+        <dl class="doc-meta">
+          <dt>Project</dt>
+          <dd>news-digest</dd>
+          <dt>Date</dt>
+          <dd>June 29, 2026</dd>
+          <dt>Re</dt>
+          <dd>Adding TechCrunch as a third feed</dd>
+          <dt>Source</dt>
+          <dd>Direct request — no PRD on file; priorities confirmed interactively</dd>
+        </dl>
+      </header>
+
+      <p class="lead">
+        Adding TechCrunch is a small change: it is plain RSS, and the existing Ars
+        Technica module already handles its exact shape. The one decision worth
+        making — given a "maintainability first" priority — is to extract a shared
+        RSS core rather than clone a third near-identical module. Content depth is
+        settled as excerpt-only, which the live feed makes the only realistic option
+        anyway.
+      </p>
+
+      <aside class="callout">
+        <p class="callout-title">Priorities driving trade-offs</p>
+        <p>
+          Maintainability first (this codebase will keep accruing sources — keep
+          source #4/#5 cheap), then correctness, then minimal change. Content depth
+          is fixed: excerpt-only, matching Ars Technica, with no Jina enrichment for
+          TechCrunch.
+        </p>
+      </aside>
+
+      <aside class="callout callout--beige">
+        <p class="callout-title">Verified fact — 2026-06-29</p>
+        <p>
+          <code>https://techcrunch.com/feed/</code> is a WordPress RSS 2.0 feed. Each
+          <code>&lt;item&gt;</code> carries <code>title</code>, <code>link</code>, a
+          stable <code>&lt;guid isPermaLink="false"&gt;…?p=NNN&lt;/guid&gt;</code>, and
+          a single-sentence <code>&lt;description&gt;</code> (CDATA). There is
+          <strong>no</strong> <code>&lt;content:encoded&gt;</code>. The existing
+          <code>arstechnica._extract_content</code> already handles this: it prefers
+          <code>content</code>, falls back to <code>summary</code> (the description),
+          strips HTML, and caps at 2000 characters.
+        </p>
+      </aside>
+
+      <hr />
+
+      <h2>Design problem: clone the Ars module, or generalize the RSS source</h2>
+      <p>
+        The mechanical work has only one sensible shape and is spec'd below without
+        ceremony: a TechCrunch source that normalizes feed entries to
+        <code>Article</code> (<code>id="techcrunch:&lt;guid&gt;"</code>, skip entries
+        missing title/link, <code>stable_hash</code> fallback), a
+        <code>techcrunch_top_n</code> setting, a guarded fetch in
+        <code>main._gather_articles</code>, and a mirrored test module. The one
+        consequential fork is how to structure the now-duplicated RSS code.
+      </p>
+      <p>
+        <strong>At stake:</strong> whether the codebase carries two (soon N)
+        near-identical RSS modules each duplicating <code>_TextExtractor</code>,
+        <code>_strip_html</code>, and <code>_extract_content</code>, or a single
+        shared RSS core. This is the only decision here that is expensive to reverse,
+        and it is exactly the axis the "maintainability first" priority targets.
+      </p>
+
+      <h3>Candidate approaches</h3>
+      <ul>
+        <li>
+          <span class="label">A — Clone:</span> copy
+          <code>arstechnica.py</code> to <code>techcrunch.py</code> verbatim, swap the
+          feed URL and the <code>id</code>/<code>source</code> strings. <em>Pros:</em>
+          smallest, lowest-risk diff; proven code; Ars untouched. <em>Cons:</em>
+          helpers now live in two files; a fix must be made in N places; source #4
+          repeats the duplication. Directly contradicts the priority.
+        </li>
+        <li>
+          <span class="label">B — Shared core + wrappers:</span> move the helpers plus
+          a generic <code>fetch_rss_feed(client, feed_url, *, source, limit)</code>
+          into <code>sources/_rss.py</code>; <code>arstechnica.py</code> and
+          <code>techcrunch.py</code> become ~3-line wrappers. <em>Pros:</em> one home
+          for RSS parsing; source #4 is a wrapper; per-source seam survives for
+          quirks; the Ars refactor is covered by existing tests. <em>Cons:</em>
+          touches the working Ars module (small, test-guarded); slightly more upfront
+          work.
+        </li>
+        <li>
+          <span class="label">C — Data-driven:</span> one
+          <code>fetch_rss_feed</code> plus a config list of
+          <code>(source, feed_url, top_n)</code> iterated in <code>main</code>.
+          <em>Pros:</em> maximum DRY; a new source is one config line. <em>Cons:</em>
+          collapses the per-source seam; the per-source <code>try/except</code>
+          isolation in <code>_gather_articles</code> must also be generalized — more
+          churn for marginal gain. Over-engineered for two RSS sources.
+        </li>
+      </ul>
+
+      <table>
+        <caption>Trade-offs across the dimensions that discriminate</caption>
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>A — Clone</th>
+            <th>B — Shared core</th>
+            <th>C — Data-driven</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Duplication / cost of source #4</td>
+            <td>High — copy whole module</td>
+            <td>Low — 3-line wrapper</td>
+            <td>Lowest — one config line</td>
+          </tr>
+          <tr>
+            <td>Upfront effort &amp; risk</td>
+            <td>Lowest — Ars untouched</td>
+            <td>Low — Ars refactor, test-guarded</td>
+            <td>Medium — also generalize error isolation</td>
+          </tr>
+          <tr>
+            <td>Per-source flexibility</td>
+            <td>High (separate files)</td>
+            <td>High (wrapper seam)</td>
+            <td>Low (uniform loop)</td>
+          </tr>
+          <tr>
+            <td>Regression risk to Ars path</td>
+            <td>None</td>
+            <td>Low (covered by tests)</td>
+            <td>Medium</td>
+          </tr>
+          <tr>
+            <td>Fit to "maintainability first"</td>
+            <td>Poor</td>
+            <td>Strong</td>
+            <td>Strong but overshoots</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <aside class="callout callout--key">
+        <p class="callout-title">Recommendation — Approach B</p>
+        <p>
+          Extract a shared <code>sources/_rss.py</code> core and make Ars and
+          TechCrunch thin wrappers over it. It is the direct expression of the
+          priority: it removes the duplication cloning would entrench while keeping a
+          per-source seam for future quirks. The one real cost — refactoring the
+          working Ars module — is bounded by the existing <code>test_arstechnica.py</code>
+          suite, which exercises every helper being moved; run it before and after and
+          any regression surfaces immediately. C is rejected as premature: with two
+          sources, the per-source <code>try/except</code> isolation is a feature, not
+          boilerplate. This rests on one assumption — that the refactor preserves the
+          public <code>fetch_feed</code> signature so <code>main.py</code> is
+          unaffected; the wrapper makes that cheap to honor.
+        </p>
+      </aside>
+
+      <h2>Decision record</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Design problem</th>
+            <th>Chosen approach</th>
+            <th>Why</th>
+            <th>Alternatives rejected</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Structure of duplicated RSS code</td>
+            <td>B — shared <code>_rss.py</code> + thin wrappers</td>
+            <td>Removes duplication, keeps a per-source seam, refactor is test-guarded</td>
+            <td>A (clone — entrenches duplication); C (data-driven — overshoots, loses error-isolation seam)</td>
+          </tr>
+          <tr>
+            <td>Content depth for TechCrunch</td>
+            <td>Excerpt only (reuse <code>_extract_content</code>)</td>
+            <td>Feed has no <code>content:encoded</code>; description is all there is short of Jina</td>
+            <td>Jina full-text enrichment (added latency + rate-limit dependence for marginal gain)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>System architecture</h2>
+      <p>
+        No architectural change — TechCrunch slots into the existing fetch → dedup →
+        summarize → render → send → archive pipeline as a third source. The only
+        structural change is internal to the <code>sources/</code> package: RSS parsing
+        is consolidated behind <code>_rss.py</code>.
+      </p>
+
+      <div class="diagram">                         sources/
+                         ┌───────────────────────────────────┐
+[GitHub Actions cron] →  │ hackernews.py ─┐                   │
+   main.run()            │ arstechnica.py ┤→ _rss.py (shared) │
+        │                │ techcrunch.py ─┘   (RSS core)      │
+        ▼                └───────────────────────────────────┘
+ _gather_articles() ── fetches all 3 sources, each guarded by its own try/except
+        │
+        ▼
+ filter_new() ──→ summarize_all() ──→ render_digest() ──→ send_email() ──→ Archive
+   (dedup)        (Gemini themes)       (html / text)       (Gmail SMTP)    (Postgres)</div>
+
+      <h2>Components</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Purpose</th>
+            <th>Change</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>sources/_rss.py</code></td>
+            <td>Shared RSS core: <code>_TextExtractor</code>, <code>_strip_html</code>, <code>_extract_content</code>, generic <code>fetch_rss_feed(...)</code></td>
+            <td>New (helpers moved out of Ars)</td>
+          </tr>
+          <tr>
+            <td><code>sources/arstechnica.py</code></td>
+            <td>Thin wrapper: supplies <code>ARS_FEED</code> + <code>source</code>, keeps <code>fetch_feed</code> signature</td>
+            <td>Refactor</td>
+          </tr>
+          <tr>
+            <td><code>sources/techcrunch.py</code></td>
+            <td>Thin wrapper: <code>TECHCRUNCH_FEED</code> + <code>source="techcrunch"</code>, delegates</td>
+            <td>New</td>
+          </tr>
+          <tr>
+            <td><code>config.py</code></td>
+            <td>Add <code>techcrunch_top_n: int = Field(default=5, ge=1, le=100)</code></td>
+            <td>Edit</td>
+          </tr>
+          <tr>
+            <td><code>main.py</code></td>
+            <td>Add a third guarded block in <code>_gather_articles</code></td>
+            <td>Edit</td>
+          </tr>
+          <tr>
+            <td><code>tests/test_rss.py</code></td>
+            <td>Shared-core behavior (HTML strip, content/description preference, cap, id/skip rules)</td>
+            <td>New</td>
+          </tr>
+          <tr>
+            <td><code>tests/test_techcrunch.py</code></td>
+            <td>TechCrunch-specific: source/id prefix, real-feed-shape fixture (description-only, CDATA, <code>?p=</code> guid)</td>
+            <td>New</td>
+          </tr>
+          <tr>
+            <td><code>tests/test_arstechnica.py</code></td>
+            <td>Trim to Ars-specific assertions once shared cases move to <code>test_rss.py</code></td>
+            <td>Edit</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Data flow</h2>
+      <ol>
+        <li><code>main.run</code> opens the repo, loads the dedup ledger, opens one shared <code>httpx.AsyncClient</code>.</li>
+        <li><code>_gather_articles</code> fetches HackerNews, then Ars, then <strong>TechCrunch</strong> — each in its own <code>try/except</code> so a TechCrunch outage logs and continues.</li>
+        <li><code>techcrunch.fetch_feed → _rss.fetch_rss_feed</code> GETs and parses the feed, and for each of the top <code>techcrunch_top_n</code> entries: skips items missing title/link, derives <code>id="techcrunch:&lt;guid&gt;"</code> (stable-hash fallback), extracts the description excerpt (capped at 2000 chars), returns <code>Article(source="techcrunch", score=None)</code>.</li>
+        <li><code>filter_new</code> drops any TechCrunch <code>id</code> already in the ledger window.</li>
+        <li><code>summarize_all</code> (one Gemini call) assigns each surviving article a summary, theme, and relevance.</li>
+        <li><code>render_digest</code> groups by theme (TechCrunch intermixes with the rest); <code>send_email</code> delivers; <code>save_sent</code> archives the <code>techcrunch:&lt;guid&gt;</code> ids.</li>
+      </ol>
+
+      <h2>Integration points &amp; dependencies</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>System / API</th>
+            <th>Direction</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>TechCrunch RSS (<code>techcrunch.com/feed/</code>)</td>
+            <td>In</td>
+            <td>Public WordPress RSS 2.0; no auth, no secret, no rate-limit concern at one fetch/day.</td>
+          </tr>
+          <tr>
+            <td>HackerNews / Ars Technica</td>
+            <td>In</td>
+            <td>Unchanged existing sources.</td>
+          </tr>
+          <tr>
+            <td>Google Gemini, Gmail SMTP, Postgres</td>
+            <td>Both / Out</td>
+            <td>Unchanged; TechCrunch articles flow through them like any other.</td>
+          </tr>
+        </tbody>
+      </table>
+      <p>
+        <strong>Upstream</strong> (this relies on): <code>feedparser</code>,
+        <code>httpx</code> — already present, <em>no new dependency</em>; plus
+        TechCrunch feed availability and guid stability.
+        <strong>Downstream</strong> (relies on this): the source-agnostic
+        <code>_gather_articles → summarize_all → render_digest → archive</code> chain,
+        which needs no change beyond the one fetch call.
+      </p>
+
+      <h2>Non-functional requirements</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Requirement</th>
+            <th>Target</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Failure isolation</td>
+            <td>A TechCrunch fetch error logs via <code>logger.exception</code> and the digest still sends from the other sources.</td>
+          </tr>
+          <tr>
+            <td>Fetch latency</td>
+            <td>Completes within the existing 60s <code>AsyncClient</code> timeout; a single GET + parse, no per-item enrichment.</td>
+          </tr>
+          <tr>
+            <td>Prompt-size safety</td>
+            <td>Each excerpt capped at <code>MAX_CONTENT_CHARS</code> (2000) by the shared <code>_extract_content</code>.</td>
+          </tr>
+          <tr>
+            <td>Dedup correctness</td>
+            <td>Stable <code>techcrunch:&lt;?p=NNN&gt;</code> ids prevent re-sends across the dedup window.</td>
+          </tr>
+          <tr>
+            <td>Test coverage</td>
+            <td>Project gate of ≥80% maintained; new modules covered; Ars suite stays green through the refactor.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Risks and mitigations</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Risk</th>
+            <th>Mitigation</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Refactoring the working Ars module regresses RSS parsing</td>
+            <td>Move helpers behind the existing public <code>fetch_feed</code> signature; run <code>test_arstechnica.py</code> before and after. Land the refactor and the TechCrunch-add as two separate commits to isolate blame.</td>
+          </tr>
+          <tr>
+            <td>TechCrunch gives Gemini a thinner signal</td>
+            <td>Accepted per the excerpt-only decision: only a one-sentence <code>description</code>, no <code>content:encoded</code>. Summaries fall back to title+excerpt. Revisit with Jina enrichment only if summaries prove weak.</td>
+          </tr>
+          <tr>
+            <td>TechCrunch has no HN-style <code>score</code>, so "Also Notable" can't gate it on <code>unthemed_min_hn_score</code></td>
+            <td>Unthemed TechCrunch items are kept on relevance alone — same path as Ars, which also has no score. Existing <code>build_groups</code> behavior; noted so the mix shift is expected, not a bug.</td>
+          </tr>
+          <tr>
+            <td>Feed volume floods the digest (TechCrunch publishes hourly)</td>
+            <td>Cap with <code>techcrunch_top_n</code> (default 5, matching <code>ars_top_n</code>); the dedup window prevents re-sends.</td>
+          </tr>
+          <tr>
+            <td><code>guid</code> format changes upstream, breaking dedup</td>
+            <td><code>stable_hash(title, link)</code> fallback covers a missing/blank guid; a format change is low-probability and self-heals next run.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>Open technical questions</h2>
+      <ul>
+        <li>
+          <span class="label">Resolved:</span> Does the feed carry full body text? No
+          — <code>description</code> excerpt only, no <code>content:encoded</code>.
+          Confirmed 2026-06-29.
+        </li>
+        <li>
+          <span class="label">TBD:</span> Default <code>techcrunch_top_n</code> —
+          proposed 5 (parity with <code>ars_top_n</code>). Confirm desired source mix.
+        </li>
+        <li>
+          <span class="label">TBD:</span> Main feed vs. a category feed (e.g.
+          <code>/category/artificial-intelligence/feed/</code>). Proposed: main feed,
+          since Gemini already themes and the "Also Notable" gate filters relevance.
+        </li>
+        <li>
+          <span class="label">TBD:</span> One PR or two commits? Recommended: two
+          commits (refactor, then add) in one PR, for reviewable isolation of the Ars
+          refactor.
+        </li>
+      </ul>
+
+      <footer class="doc-footer">
+        <span>Technical Design · news-digest</span>
+        <span>June 29, 2026</span>
+      </footer>
+    </main>
+  </body>
+</html>
