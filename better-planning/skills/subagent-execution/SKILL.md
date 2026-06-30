@@ -58,7 +58,7 @@ Use the least powerful model that can handle each role, to conserve cost and inc
 
 - **Transcription tasks** — the brief contains the complete content to produce, so the work is transcription plus verification: cheapest tier (e.g., Haiku 4.5).
 - **Mechanical tasks** — isolated, 1-2 artifacts, complete spec, prose description to follow: cheap to standard tier.
-- **Integration and judgment tasks** — multi-artifact coordination, pattern matching, debugging: standard tier (e.g., Sonnet 4.6).
+- **Integration and judgment tasks** — multi-artifact coordination, pattern matching, debugging: standard tier (e.g., Sonnet 5).
 - **Architecture and design tasks, plus the final whole-run review** — most capable tier (e.g., Opus 4.8).
 - **Reviewers** — scale to the change-set's size, complexity and risk. A small mechanical change does not need the top tier; a subtle one does. Use a mid tier as the floor for reviewers.
 
