@@ -2,9 +2,25 @@
 
 The `bx-pptx` house style translated to the web. Produces **single-file,
 self-contained HTML documents** for professional communication — decision memos,
-briefings, reports, summaries, and one-pagers — that are readable on screen and
-print cleanly to PDF. Same warm pastel palette on charcoal type; retuned from
-"projection and density" to "a calm reading column with clear hierarchy".
+briefings, reports, summaries, one-pagers, and **technical design docs** — that
+are readable on screen and print cleanly to PDF. Same warm pastel palette on
+charcoal type; retuned from "projection and density" to "a calm reading column
+with clear hierarchy".
+
+Two document families share one stylesheet:
+
+- **Memo family** (`<main class="doc">`) — a centered reading card for memos,
+  briefings, reports, one-pagers.
+- **Technical design** (`<body class="techdoc">`) — a full-bleed, sectioned
+  layout with a richer motif kit (cover, TOC, numbered problem sections, approach
+  cards, decision record, data-flow rail) for *problems → approaches →
+  recommendation → architecture* docs.
+
+Typography carries hierarchy through **three role-based font families** — serif
+headings, sans body, mono labels/indices (all system-font stacks). Color does
+double duty as a **semantic state system**: tea-green = recommended, caramel =
+caution, coral = rejected/critical — so comparison-heavy docs are scannable at a
+glance.
 
 ## What it produces
 
@@ -38,18 +54,22 @@ email, share, or print. Open it in any browser; use the browser's
 
 ```
 bx-html-branding/
-├── README.md         ← this file
-├── SKILL.md          ← Design Ideas (house style) + build/QA workflow
-├── house-style.css   ← design tokens (CSS custom properties) + components
-└── template.html     ← starter standalone document
+├── README.md                       ← this file
+├── SKILL.md                        ← Design Ideas (house style) + build/QA workflow
+├── house-style.css                 ← design tokens (CSS custom properties) + components
+├── template.html                   ← starter memo / briefing / report / one-pager
+└── template-technical-design.html  ← starter technical design doc (.techdoc kit)
 ```
 
 ## Usage
 
-1. Copy `template.html`.
+1. Copy the template that matches the document: `template.html` for a
+   memo/briefing/report/one-pager, or `template-technical-design.html` for a
+   technical design doc.
 2. Inline the full `house-style.css` into its `<style>` block.
-3. Pick `.doc` (memos/reports) or `.doc--wide` (one-pagers); fill in content with
-   the house class vocabulary.
+3. Fill in content with the house class vocabulary — `.doc`/`.doc--wide` for the
+   memo family, or the `.techdoc` kit (cover, problem sections, approach cards,
+   flow rail) for a design doc.
 4. Open in a browser, screenshot, and run the QA bug-hunt in `SKILL.md`.
 
 Reference the CSS custom properties (`--color-charcoal`, `--color-coral`, …) —
