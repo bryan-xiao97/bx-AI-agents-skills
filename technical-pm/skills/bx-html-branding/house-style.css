@@ -4,6 +4,14 @@
    for readable, easy-to-digest professional HTML documents.
    Inline this whole file into a <style> block so the document stays one
    self-contained, shareable, printable file.
+
+   Two document families share these tokens:
+     • Memo / briefing / report / one-pager  → <main class="doc">
+     • Technical design doc (problems→approaches→decision→architecture)
+                                             → <body class="techdoc"> + full-bleed
+                                               .cover / .band / <section>.
+   Everything below the "Technical design kit" divider is opt-in: it never
+   touches the memo classes, so existing memo/one-pager output is unaffected.
    ========================================================================== */
 
 /* --- Design tokens ------------------------------------------------------- */
@@ -26,20 +34,52 @@
   --color-rule: var(--color-sand);
   --color-rule-soft: #ece8d4;
 
-  /* Type — Segoe UI first to match the house style and Outlook context */
+  /* Semantic STATE system — the meaning behind the colors.
+     Same warm palette, now doing wayfinding: a reader can tell recommended
+     from rejected before reading a word. Derived tints/darks stay in-family
+     (a deeper tea, a paler coral) — no new hues, just readable partners. */
+  --state-good-bg: var(--color-tea); /* recommended / pro / pass / low risk */
+  --state-good-edge: #3a9d78; /* readable deep-tea edge & solid fills */
+  --state-good-text: #1f6b4f; /* readable on white and on tea */
+  --state-warn-bg: #faedd8; /* caution / con / medium risk (pale caramel) */
+  --state-warn-edge: var(--color-caramel);
+  --state-warn-text: #8a5a12; /* readable brown on white / pale caramel */
+  --state-bad-bg: #ffe6e3; /* rejected / disqualified / high risk (pale coral)*/
+  --state-bad-edge: var(--color-coral);
+  --state-bad-text: #9a2b23; /* readable dark coral on white / pale coral */
+  --state-neutral-bg: var(--color-beige); /* settled / index / structural */
+
+  /* Inverted panel — charcoal is the only dark; used sparingly as an anchor
+     (cover masthead, one constraints/emphasis panel). */
+  --panel-bg: var(--color-charcoal);
+  --panel-bg-2: #3b3a38; /* gradient partner */
+  --panel-text: #f4f2ec; /* warm off-white */
+  --panel-text-muted: #cfc9b8;
+  --panel-label: #b3ab97;
+
+  /* Type — three families, fixed roles:
+       sans   → body copy, UI labels
+       serif  → titles & headings (editorial contrast)
+       mono   → eyebrows, indices, captions, tags ("system / technical" signal) */
   --font-sans: "Segoe UI", -apple-system, BlinkMacSystemFont, "Helvetica Neue",
     Arial, sans-serif;
+  --font-serif: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
+    Georgia, "Times New Roman", serif;
+  --font-mono: "SFMono-Regular", "SF Mono", "Cascadia Code", "JetBrains Mono",
+    Consolas, "Liberation Mono", Menlo, ui-monospace, monospace;
+
   --text-meta: 0.8125rem; /* 13px */
   --text-body: 1rem; /* 16px */
   --text-lead: 1.1875rem; /* 19px */
   --text-h3: 1.1875rem;
-  --text-h2: 1.5rem;
-  --text-h1: 2rem;
+  --text-h2: clamp(1.4rem, 1.15rem + 1vw, 1.75rem); /* fluid */
+  --text-h1: clamp(2rem, 1.4rem + 2.4vw, 2.75rem); /* fluid */
   --text-eyebrow: 0.75rem;
   --leading-body: 1.65;
 
   /* Rhythm */
   --measure: 42rem; /* ~70ch reading column */
+  --wrap: 60rem; /* wide layout canvas for the technical-design type */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -77,7 +117,7 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* --- Document shell ------------------------------------------------------ */
+/* --- Document shell (memo / briefing / report / one-pager) --------------- */
 .doc {
   max-width: var(--measure);
   margin: var(--space-12) auto;
@@ -97,6 +137,7 @@ body {
 /* --- Masthead / header --------------------------------------------------- */
 .doc-eyebrow {
   margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
   font-size: var(--text-eyebrow);
   font-weight: 600;
   letter-spacing: 0.08em;
@@ -106,10 +147,12 @@ body {
 
 .doc-title {
   margin: 0 0 var(--space-4);
+  font-family: var(--font-serif);
   font-size: var(--text-h1);
   font-weight: 600;
-  line-height: 1.15;
+  line-height: 1.12;
   letter-spacing: -0.01em;
+  text-wrap: balance;
 }
 
 /* Memo-style metadata block (To / From / Date / Re) */
@@ -124,6 +167,7 @@ body {
   font-size: var(--text-meta);
 }
 .doc-meta dt {
+  font-family: var(--font-mono);
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -141,7 +185,14 @@ body {
   margin: 0 0 var(--space-8);
 }
 
-/* --- Headings: the vertical caramel accent bar (NO underlines) ----------- */
+/* --- Headings: serif, with the vertical caramel accent bar (NO underlines) */
+h1,
+h2,
+h3,
+.h2 {
+  font-family: var(--font-serif);
+}
+
 h2,
 .h2 {
   position: relative;
@@ -149,8 +200,9 @@ h2,
   padding-left: var(--space-4);
   font-size: var(--text-h2);
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.2;
   letter-spacing: -0.005em;
+  text-wrap: balance;
 }
 h2::before,
 .h2::before {
@@ -170,6 +222,7 @@ h3,
   font-size: var(--text-h3);
   font-weight: 600;
   line-height: 1.3;
+  text-wrap: balance;
 }
 
 /* --- Body copy ----------------------------------------------------------- */
@@ -201,7 +254,7 @@ strong {
   text-underline-offset: 2px;
 }
 
-/* The single sharp accent. Use once per document. */
+/* The single sharp accent. Use once per document (memo family). */
 .accent {
   color: var(--color-coral);
   font-weight: 600;
@@ -219,6 +272,17 @@ li::marker {
   color: var(--color-caramel);
 }
 
+/* Inline code / references */
+code,
+.ref {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  padding: 0.08em 0.36em;
+  background: var(--color-bg-tint);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 4px;
+}
+
 /* --- Callout blocks (tea-green / beige tints) ---------------------------- */
 .callout {
   margin: var(--space-6) 0;
@@ -232,6 +296,7 @@ li::marker {
 }
 .callout-title {
   margin: 0 0 var(--space-2);
+  font-family: var(--font-mono);
   font-size: var(--text-meta);
   font-weight: 600;
   letter-spacing: 0.06em;
@@ -271,6 +336,7 @@ li::marker {
   font-weight: 600;
   line-height: 1.1;
   letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 .stat-label {
   display: block;
@@ -292,7 +358,10 @@ table {
 }
 caption {
   margin-bottom: var(--space-2);
+  font-family: var(--font-mono);
   font-size: var(--text-meta);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--color-text-muted);
   text-align: left;
 }
@@ -309,6 +378,10 @@ td {
 }
 tbody tr:nth-child(even) {
   background: var(--color-bg-tint);
+}
+/* Tabular figures for number columns */
+.tnum {
+  font-variant-numeric: tabular-nums;
 }
 
 /* --- Pills / tags -------------------------------------------------------- */
@@ -348,6 +421,793 @@ hr {
   gap: var(--space-4);
 }
 
+/* ==========================================================================
+   TECHNICAL DESIGN KIT  (opt-in — use with <body class="techdoc">)
+   Full-bleed sectioned layout + the motif vocabulary a design doc needs:
+   cover, TOC, numbered problem sections, approach cards, recommendation,
+   decision-record & comparison tables, a data-flow rail, severity pills.
+   None of these classes touch the memo family above.
+   ========================================================================== */
+
+/* --- Two-track layout: wide canvas + narrow reading measure -------------- */
+.wrap {
+  max-width: var(--wrap);
+  margin: 0 auto;
+  padding: 0 clamp(1.25rem, 5vw, 3.5rem);
+}
+.col {
+  max-width: var(--measure);
+} /* hold prose to the measure inside the wide canvas */
+
+.techdoc {
+  background: var(--color-bg-tint);
+}
+.techdoc section {
+  padding: clamp(2.5rem, 6vw, 4.5rem) 0 0;
+}
+.techdoc section:last-of-type {
+  padding-bottom: clamp(3rem, 8vw, 6rem);
+}
+
+/* --- Eyebrow with a tick-rule (mono) ------------------------------------- */
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.9rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.eyebrow::before {
+  content: "";
+  width: 26px;
+  height: 2px;
+  background: var(--color-caramel);
+  flex: none;
+}
+
+.lede {
+  font-size: var(--text-lead);
+  line-height: 1.55;
+  color: var(--color-text-muted);
+}
+
+/* --- Cover masthead (inverted charcoal anchor) --------------------------- */
+.cover {
+  background: var(--panel-bg);
+  background-image: linear-gradient(
+    180deg,
+    var(--panel-bg-2) 0%,
+    var(--panel-bg) 60%
+  );
+  color: var(--panel-text);
+  border-top: 3px solid var(--color-caramel);
+  padding: clamp(2.75rem, 7vw, 5.5rem) 0 clamp(2.25rem, 5vw, 3.75rem);
+}
+.cover .eyebrow {
+  color: var(--panel-label);
+}
+.cover .eyebrow::before {
+  background: var(--color-caramel);
+}
+.cover h1 {
+  margin: 0 0 0.45em;
+  font-family: var(--font-serif);
+  font-weight: 600;
+  font-size: clamp(2.1rem, 6vw, 3.1rem);
+  line-height: 1.06;
+  letter-spacing: -0.018em;
+  max-width: 20ch;
+  text-wrap: balance;
+  color: var(--color-white);
+}
+.cover .sub {
+  max-width: 56ch;
+  margin: 0 0 2.4rem;
+  font-size: clamp(1rem, 2.2vw, 1.18rem);
+  color: var(--panel-text-muted);
+}
+
+/* Metadata grid (Date / Owner / Surface / Status …) */
+.meta {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.meta div {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 0.85rem 1rem;
+}
+.meta dt {
+  margin: 0 0 0.3rem;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--panel-label);
+}
+.meta dd {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--panel-text);
+}
+
+/* --- Band (alternate full-bleed surface) --------------------------------- */
+.band {
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-rule-soft);
+}
+
+/* --- Two-column summary grid --------------------------------------------- */
+.grid-2 {
+  display: grid;
+  gap: clamp(1.25rem, 4vw, 2.75rem);
+  grid-template-columns: 1fr;
+}
+@media (min-width: 760px) {
+  .grid-2 {
+    grid-template-columns: 1.15fr 1fr;
+  }
+}
+
+/* Definition list for decided inputs */
+.deflist {
+  margin: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+.deflist .row {
+  display: grid;
+  grid-template-columns: minmax(110px, 0.4fr) 1fr;
+  gap: 1rem;
+  align-items: baseline;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px dotted var(--color-rule);
+}
+.deflist .row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+.deflist dt {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+.deflist dd {
+  margin: 0;
+}
+.deflist strong {
+  color: var(--color-charcoal);
+}
+
+/* Priorities / tie-breaker panel */
+.priorities {
+  background: var(--color-bg-tint);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius);
+  padding: 1.4rem 1.5rem;
+}
+.priorities h4 {
+  margin: 0 0 0.6rem;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+}
+.chain {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.4rem 0 1rem;
+}
+.pri-pill {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  padding: 0.28em 0.7em;
+  border-radius: 999px;
+  background: var(--color-beige);
+  border: 1px solid var(--color-rule-soft);
+}
+.pri-pill.lead {
+  background: var(--color-charcoal);
+  color: var(--color-white);
+  border-color: var(--color-charcoal);
+}
+.chain .arrow {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+/* --- Advisory / note callout (caution state) ----------------------------- */
+.advisory {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem 1.1rem;
+  margin-top: 2rem;
+  padding: 1.2rem 1.4rem;
+  background: var(--state-warn-bg);
+  border: 1px solid var(--state-warn-edge);
+  border-left: 4px solid var(--state-warn-edge);
+  border-radius: 8px;
+}
+.advisory .mark {
+  font-family: var(--font-serif);
+  font-weight: 700;
+  font-size: 1.4rem;
+  line-height: 1;
+  color: var(--state-warn-text);
+}
+.advisory h4 {
+  margin: 0 0 0.3rem;
+  color: var(--state-warn-text);
+  font-size: 1.02rem;
+}
+.advisory p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--state-warn-text);
+}
+
+/* --- Contents index (TOC) ------------------------------------------------ */
+.toc {
+  display: grid;
+  grid-template-columns: 1fr;
+  margin-top: 1.4rem;
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--color-white);
+}
+@media (min-width: 680px) {
+  .toc {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+.toc a {
+  display: flex;
+  gap: 0.8rem;
+  align-items: baseline;
+  padding: 0.8rem 1.1rem;
+  text-decoration: none;
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-rule-soft);
+  transition: background var(--duration) var(--ease);
+}
+@media (min-width: 680px) {
+  .toc a:nth-child(odd) {
+    border-right: 1px solid var(--color-rule-soft);
+  }
+}
+.toc a:hover {
+  background: var(--color-bg-tint);
+}
+.toc .n {
+  font-family: var(--font-mono);
+  font-size: 0.74rem;
+  color: var(--state-warn-text);
+  min-width: 1.6em;
+}
+.toc .t {
+  font-size: 0.92rem;
+}
+
+/* --- Clean bullet lists -------------------------------------------------- */
+ul.clean {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.1em;
+  display: grid;
+  gap: 0.7rem;
+}
+ul.clean > li {
+  position: relative;
+  padding-left: 1.3rem;
+  margin: 0;
+}
+ul.clean > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-caramel);
+}
+
+/* --- Constraints / emphasis panel (inverted charcoal anchor) ------------- */
+.constraints {
+  margin-top: 1.6rem;
+  padding: clamp(1.25rem, 3vw, 1.9rem);
+  background: var(--panel-bg);
+  border-radius: 12px;
+}
+.constraints .eyebrow {
+  color: var(--panel-label);
+}
+.constraints h3 {
+  color: var(--color-white);
+}
+.constraints ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.9rem;
+}
+.constraints li {
+  position: relative;
+  padding-left: 1.4rem;
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--panel-text-muted);
+}
+.constraints li::before {
+  content: "\00a7"; /* § */
+  position: absolute;
+  left: 0;
+  color: var(--color-caramel);
+  font-family: var(--font-serif);
+}
+.constraints code {
+  background: rgba(240, 182, 127, 0.16);
+  border-color: rgba(240, 182, 127, 0.32);
+  color: #f6d8b8;
+}
+.constraints strong {
+  color: var(--color-white);
+}
+
+/* --- Problem "case file" section header ---------------------------------- */
+.problem {
+  border-top: 2px solid var(--color-charcoal);
+  padding-top: 1.6rem;
+  margin-top: clamp(2.5rem, 6vw, 4.5rem);
+}
+.problem-head {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+}
+.problem-head h2 {
+  margin: 0;
+  padding-left: 0;
+}
+.problem-head h2::before {
+  content: none;
+} /* the number chip replaces the bar here */
+.pnum {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-white);
+  background: var(--color-charcoal);
+  border-radius: 6px;
+  padding: 0.2em 0.6em;
+  letter-spacing: 0.04em;
+}
+.stake {
+  margin: 0.4rem 0 1.6rem;
+  padding-left: 1rem;
+  border-left: 3px solid var(--color-beige);
+  font-size: 0.98rem;
+  color: var(--color-text-muted);
+}
+.stake b {
+  color: var(--color-charcoal);
+  font-weight: 600;
+}
+
+/* --- Approach cards ------------------------------------------------------ */
+.approaches {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+  margin: 1.2rem 0 1.6rem;
+}
+@media (min-width: 720px) {
+  .approaches {
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  }
+}
+.approach {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  padding: 1.1rem 1.15rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius);
+}
+/* the recommended option — tea ring + faint gradient */
+.approach.rec {
+  border-color: var(--state-good-edge);
+  box-shadow: 0 0 0 1px var(--state-good-edge);
+  background: linear-gradient(180deg, #f2fbf5 0%, var(--color-white) 60%);
+}
+.approach .a-head {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.approach .badge {
+  flex: none;
+  width: 1.7em;
+  height: 1.7em;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--color-charcoal);
+  background: var(--color-bg-tint);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 6px;
+}
+.approach.rec .badge {
+  background: var(--state-good-edge);
+  color: var(--color-white);
+  border-color: var(--state-good-edge);
+}
+.approach .a-name {
+  font-family: var(--font-serif);
+  font-size: 1.04rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+.approach .reco-tag,
+.approach .killed {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 0.2em 0.5em;
+  border-radius: 999px;
+}
+.approach .reco-tag {
+  color: var(--state-good-text);
+  background: var(--state-good-bg);
+}
+.approach .killed {
+  color: var(--state-bad-text);
+  background: var(--state-bad-bg);
+}
+.approach p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+/* pro / con markers */
+.pc {
+  position: relative;
+  margin: 0;
+  padding-left: 1.3rem;
+  font-size: 0.86rem;
+  color: var(--color-text-muted);
+}
+.pc::before {
+  position: absolute;
+  left: 0;
+  font-weight: 700;
+}
+.pc.pro::before {
+  content: "+";
+  color: var(--state-good-edge);
+}
+.pc.con::before {
+  content: "\2212"; /* − */
+  color: var(--state-warn-edge);
+}
+
+/* --- Scrollable table wrapper + comparison-table helpers ----------------- */
+.table-scroll {
+  overflow-x: auto;
+  margin: 1.2rem 0;
+  border: 1px solid var(--color-rule-soft);
+  border-radius: var(--radius);
+  background: var(--color-white);
+}
+.table-scroll table {
+  margin: 0;
+}
+.table-scroll caption {
+  padding: 0.9rem 1rem 0.2rem;
+  margin: 0;
+}
+.table-scroll th,
+.table-scroll td {
+  border-bottom: 1px solid var(--color-rule-soft);
+  padding: 0.7rem 0.95rem;
+}
+.table-scroll thead th {
+  background: var(--color-bg-tint);
+  border-bottom: 1px solid var(--color-sand);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+}
+.table-scroll tbody tr:nth-child(even) {
+  background: transparent;
+}
+.table-scroll tbody tr:last-child td {
+  border-bottom: 0;
+}
+/* row-label (dimension) column */
+th.dim,
+td.dim {
+  font-weight: 600;
+  color: var(--color-charcoal);
+  background: var(--color-bg-tint);
+  white-space: nowrap;
+}
+/* the recommended column, highlighted the same green as the winning card */
+.col-rec {
+  background: rgba(58, 157, 120, 0.08);
+}
+th.col-rec {
+  background: var(--state-good-bg);
+  color: var(--state-good-text);
+}
+.col-rec-tag {
+  display: block;
+  margin-top: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  color: var(--state-good-text);
+}
+/* a "bad" cell — the disqualifying fact */
+td.bad,
+td.bad strong {
+  color: var(--state-bad-text);
+}
+
+/* --- Recommendation callout (the chosen pick) ---------------------------- */
+.recommend {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1.1rem;
+  align-items: start;
+  margin: 1.4rem 0;
+  padding: 1.1rem 1.4rem;
+  background: linear-gradient(180deg, #f1faf4 0%, #fbfefc 100%);
+  border: 1px solid var(--state-good-edge);
+  border-left: 4px solid var(--state-good-edge);
+  border-radius: 8px;
+}
+.recommend .rl {
+  grid-column: 1 / -1;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--state-good-text);
+}
+.recommend .pick {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.12rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
+}
+.recommend p {
+  grid-column: 1 / -1;
+  margin: 0.2rem 0 0;
+  font-size: 0.95rem;
+}
+.recommend .pick .pin {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4em;
+  height: 1.4em;
+  margin-right: 0.4rem;
+  vertical-align: 0.06em;
+  background: var(--state-good-edge);
+  color: var(--color-white);
+  border-radius: 5px;
+  font-family: var(--font-mono);
+  font-size: 0.7em;
+}
+
+/* --- Data-flow pipeline rail --------------------------------------------- */
+.flow {
+  display: grid;
+  gap: 0;
+  margin: 1.4rem 0;
+}
+.step {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+.step .rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.step .dot {
+  flex: none;
+  width: 2rem;
+  height: 2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-charcoal);
+  background: var(--color-white);
+  border: 2px solid var(--color-sand);
+}
+.step .line {
+  flex: 1;
+  width: 2px;
+  min-height: 0.6rem;
+  background: var(--color-rule);
+}
+.step:last-child .line {
+  display: none;
+}
+.step .body {
+  padding-bottom: 1rem;
+}
+.step .body b {
+  color: var(--color-charcoal);
+}
+.step .body p {
+  margin: 0.1rem 0 0;
+  font-size: 0.92rem;
+  color: var(--color-text-muted);
+}
+/* step states */
+.step.guard .dot {
+  background: var(--state-good-edge);
+  color: var(--color-white);
+  border-color: var(--state-good-edge);
+}
+.step.guard .body b {
+  color: var(--state-good-text);
+}
+.step.gate .dot {
+  background: var(--color-beige);
+  border-color: var(--color-caramel);
+}
+.step.fail .dot {
+  background: var(--state-warn-bg);
+  border-color: var(--state-warn-edge);
+  color: var(--state-warn-text);
+}
+.step.fail .body b {
+  color: var(--state-warn-text);
+}
+.flow-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.4rem;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+.flow-key span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.flow-key i {
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* --- Numbered process list (decimal-leading-zero) ------------------------ */
+ol.steps {
+  counter-reset: s;
+  list-style: none;
+  padding: 0;
+  margin: 1.2rem 0;
+  display: grid;
+  gap: 0.75rem;
+}
+ol.steps li {
+  counter-increment: s;
+  position: relative;
+  padding-left: 2.6rem;
+  margin: 0;
+  font-size: 0.95rem;
+}
+ol.steps li::before {
+  content: counter(s, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--state-warn-text);
+  background: var(--color-beige);
+  border-radius: 5px;
+  padding: 0.18em 0.45em;
+}
+
+/* --- Risk severity pills ------------------------------------------------- */
+.sev {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.18em 0.5em;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.sev.high {
+  background: var(--state-bad-bg);
+  color: var(--state-bad-text);
+}
+.sev.med {
+  background: var(--state-warn-bg);
+  color: var(--state-warn-text);
+}
+.sev.low {
+  background: var(--state-good-bg);
+  color: var(--state-good-text);
+}
+
+/* --- Open-question cards ------------------------------------------------- */
+.questions {
+  display: grid;
+  gap: 0.8rem;
+  margin-top: 1rem;
+}
+.q {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  padding: 0.9rem 1.1rem;
+  background: var(--color-white);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 8px;
+}
+.q .qtag {
+  height: fit-content;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-rule-soft);
+  border-radius: 5px;
+  padding: 0.2em 0.5em;
+}
+.q p {
+  margin: 0;
+  font-size: 0.93rem;
+}
+
+/* --- Technical-design footer --------------------------------------------- */
+.techdoc footer {
+  margin-top: 3rem;
+  padding: 2rem 0 3rem;
+  background: var(--color-white);
+  border-top: 1px solid var(--color-rule);
+}
+.techdoc footer p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+}
+.techdoc footer .src {
+  font-family: var(--font-mono);
+}
+
 /* --- Print / PDF --------------------------------------------------------- */
 @media print {
   :root {
@@ -364,6 +1224,21 @@ hr {
     box-shadow: none;
     padding: 0;
   }
+  /* keep inverted panels legible and ink-frugal in print */
+  .cover,
+  .constraints {
+    background: var(--color-white) !important;
+    color: var(--color-charcoal) !important;
+    border: 1px solid var(--color-rule);
+  }
+  .cover h1,
+  .cover .sub,
+  .cover .meta dd,
+  .constraints h3,
+  .constraints li,
+  .constraints strong {
+    color: var(--color-charcoal) !important;
+  }
   h2,
   h3 {
     break-after: avoid;
@@ -371,7 +1246,11 @@ hr {
   .callout,
   .stat,
   table,
-  figure {
+  figure,
+  .approach,
+  .recommend,
+  .step,
+  .q {
     break-inside: avoid;
   }
   a {
@@ -399,5 +1278,9 @@ hr {
   }
   .doc-footer {
     flex-direction: column;
+  }
+  .deflist .row {
+    grid-template-columns: 1fr;
+    gap: 0.2rem;
   }
 }

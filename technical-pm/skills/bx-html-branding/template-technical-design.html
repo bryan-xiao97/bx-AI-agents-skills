@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>[Design Title] — Technical Design</title>
+    <meta name="description" content="[One-sentence description of the design]" />
+    <style>
+      /* Paste the full contents of house-style.css here so the file stays
+         self-contained. Do not link to it externally. The technical-design
+         motifs below rely on the "TECHNICAL DESIGN KIT" section of that file. */
+    </style>
+  </head>
+  <!-- The technical-design type is full-bleed and sectioned: class on <body>,
+       not a centered .doc card. Prose is held to the measure with .col; grids,
+       cards, tables and the flow rail use the full .wrap canvas. -->
+  <body class="techdoc">
+    <!-- COVER — inverted charcoal masthead (one of at most two dark anchors) -->
+    <header class="cover">
+      <div class="wrap">
+        <p class="eyebrow">[Team · Product · Technical Design]</p>
+        <h1>[Design Title]</h1>
+        <p class="sub">[One or two sentences: what this wires up, and the axes
+          the doc decides.]</p>
+        <dl class="meta">
+          <div><dt>Date</dt><dd>[YYYY · MM · DD]</dd></div>
+          <div><dt>Owner</dt><dd>[Author]</dd></div>
+          <div><dt>Surface</dt><dd>[System / repo]</dd></div>
+          <div><dt>Status</dt><dd>[Draft / Decisions confirmed]</dd></div>
+        </dl>
+      </div>
+    </header>
+
+    <!-- DECIDED INPUTS + PRIORITIES (band = alternate surface) -->
+    <div class="band">
+      <div class="wrap">
+        <section>
+          <p class="eyebrow">Decided inputs &amp; priorities</p>
+          <div class="grid-2">
+            <dl class="deflist">
+              <div class="row"><dt>[Input]</dt><dd><strong>[Decision]</strong> — [detail].</dd></div>
+              <div class="row"><dt>[Input]</dt><dd><strong>[Decision]</strong> — [detail].</dd></div>
+              <div class="row"><dt>[Input]</dt><dd><strong>[Decision]</strong> — [detail].</dd></div>
+            </dl>
+            <div class="priorities">
+              <h4>What breaks a tie</h4>
+              <div class="chain">
+                <span class="pri-pill lead">[Top priority]</span>
+                <span class="arrow">&rsaquo;</span>
+                <span class="pri-pill">[Second]</span>
+                <span class="arrow">&rsaquo;</span>
+                <span class="pri-pill">[Third]</span>
+              </div>
+              <p>[Why the priority order applies cleanly here.]</p>
+            </div>
+          </div>
+
+          <!-- Advisory = the headline tension / scope assumption (caution state) -->
+          <div class="advisory" role="note">
+            <div class="mark" aria-hidden="true">§</div>
+            <div>
+              <h4>[Scope assumption this design rests on]</h4>
+              <p>[The assumption, and the guardrail if it changes.]</p>
+            </div>
+          </div>
+
+          <!-- Contents index -->
+          <nav class="toc" aria-label="Contents">
+            <a href="#today"><span class="n">00</span><span class="t">How it works today &amp; constraints</span></a>
+            <a href="#p1"><span class="n">01</span><span class="t">[First design problem]</span></a>
+            <a href="#p2"><span class="n">02</span><span class="t">[Second design problem]</span></a>
+            <a href="#decisions"><span class="n">&#9656;</span><span class="t">Decision record</span></a>
+            <a href="#arch"><span class="n">&#9656;</span><span class="t">Architecture &amp; data flow</span></a>
+            <a href="#nfr"><span class="n">&#9656;</span><span class="t">NFRs, risks &amp; open questions</span></a>
+          </nav>
+        </section>
+        <div style="height: clamp(2.25rem, 5vw, 3.5rem)"></div>
+      </div>
+    </div>
+
+    <!-- CONTEXT + BINDING CONSTRAINTS -->
+    <section id="today">
+      <div class="wrap">
+        <p class="eyebrow">Context</p>
+        <h2>How it works today</h2>
+        <div class="col">
+          <ul class="clean">
+            <li>[Current behavior, with <code>file:line</code> references.]</li>
+            <li>[Current behavior.]</li>
+          </ul>
+        </div>
+
+        <!-- Inverted constraints panel (the second dark anchor, at most) -->
+        <div class="constraints">
+          <p class="eyebrow">Binding constraints</p>
+          <h3>These bind every choice below</h3>
+          <ul>
+            <li>[Constraint the design must honor.]</li>
+            <li>[Constraint.]</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESIGN PROBLEM 01 -->
+    <section id="p1">
+      <div class="wrap">
+        <div class="problem">
+          <div class="problem-head"><span class="pnum">01</span><h2>[Design problem]</h2></div>
+          <p class="stake"><b>At stake:</b> [what turns on this decision, and what forces it].</p>
+
+          <!-- Approach cards: mark the winner with class="approach rec" -->
+          <div class="approaches">
+            <div class="approach rec">
+              <div class="a-head"><span class="badge">A</span><span class="a-name">[Approach A]</span><span class="reco-tag">Recommended</span></div>
+              <p>[One-line description.]</p>
+              <p class="pc pro">[Advantage.]</p>
+              <p class="pc con">[Cost / limitation.]</p>
+            </div>
+            <div class="approach">
+              <div class="a-head"><span class="badge">B</span><span class="a-name">[Approach B]</span></div>
+              <p>[Description.]</p>
+              <p class="pc pro">[Advantage.]</p>
+              <p class="pc con">[Cost.]</p>
+            </div>
+            <div class="approach">
+              <div class="a-head"><span class="badge">C</span><span class="a-name">[Approach C]</span><span class="killed">Disqualified</span></div>
+              <p>[Description.]</p>
+              <p class="pc pro">[Advantage.]</p>
+              <p class="pc con">[Disqualifying fact.]</p>
+            </div>
+          </div>
+
+          <!-- Comparison table: highlight the recommended column with .col-rec -->
+          <div class="table-scroll">
+            <table>
+              <caption>Trade-offs</caption>
+              <thead>
+                <tr>
+                  <th class="dim">Dimension</th>
+                  <th class="col-rec">A — [name]<span class="col-rec-tag">&#10003; recommended</span></th>
+                  <th>B — [name]</th>
+                  <th>C — [name]</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td class="dim">[Dimension]</td><td class="col-rec">[value]</td><td>[value]</td><td class="bad"><strong>[disqualifying]</strong></td></tr>
+                <tr><td class="dim">[Dimension]</td><td class="col-rec">[value]</td><td>[value]</td><td>[value]</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="recommend">
+            <span class="rl">Recommendation</span>
+            <p class="pick"><span class="pin">A</span>[The chosen option, stated plainly]</p>
+            <p>[Why it wins on the stated priority; the recorded assumption, if any.]</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Duplicate the #p1 <section> for #p2, #p3, … as needed. -->
+
+    <!-- DECISION RECORD -->
+    <section id="decisions">
+      <div class="wrap">
+        <p class="eyebrow">The spine</p>
+        <h2>Decision record</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th class="dim">Design problem</th><th>Chosen</th><th>Why</th><th>Rejected</th></tr>
+            </thead>
+            <tbody>
+              <tr><td class="dim">01 · [problem]</td><td><strong>A</strong> — [choice]</td><td>[why]</td><td>[rejected + one-line reason]</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARCHITECTURE + DATA FLOW -->
+    <section id="arch">
+      <div class="wrap">
+        <p class="eyebrow">System architecture</p>
+        <h2>[The path of a … ]</h2>
+        <p class="col lede">[One-line framing of the diagram below.]</p>
+
+        <!-- Data-flow rail. States: default | gate | guard (deterministic) | fail -->
+        <div class="flow" role="list" aria-label="Data flow">
+          <div class="step gate" role="listitem"><div class="rail"><div class="dot">1</div><div class="line"></div></div><div class="body"><b>[Step]</b><p>[detail]</p></div></div>
+          <div class="step guard" role="listitem"><div class="rail"><div class="dot">2</div><div class="line"></div></div><div class="body"><b>[Deterministic guardrail]</b><p>[detail]</p></div></div>
+          <div class="step" role="listitem"><div class="rail"><div class="dot">3</div><div class="line"></div></div><div class="body"><b>[Step]</b><p>[detail]</p></div></div>
+          <div class="step fail" role="listitem"><div class="rail"><div class="dot">!</div><div class="line"></div></div><div class="body"><b>Any failure → [handling]</b><p>[detail]</p></div></div>
+        </div>
+        <div class="flow-key">
+          <span><i style="background:#eef5db;border:2px solid #f0b67f"></i> gate / transport</span>
+          <span><i style="background:#3a9d78"></i> deterministic guardrail</span>
+          <span><i style="background:#faedd8;border:2px solid #f0b67f"></i> failure path</span>
+        </div>
+
+        <h3>Components</h3>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th class="dim">Component</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td class="dim"><code>[component]</code></td><td>[purpose]</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Data flow</h3>
+        <ol class="steps">
+          <li>[Step in the runtime path.]</li>
+          <li>[Step.]</li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- NFRs / RISKS / OPEN QUESTIONS -->
+    <section id="nfr">
+      <div class="wrap">
+        <p class="eyebrow">Non-functional requirements</p>
+        <h2>Targets, observable not aspirational</h2>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th class="dim">Requirement</th><th>Target</th></tr></thead>
+            <tbody>
+              <tr><td class="dim">[Requirement]</td><td>[measurable target]</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="eyebrow" style="margin-top: 2.6rem">Risks &amp; mitigations</p>
+        <h2>What could derail it</h2>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th style="width: 7rem">Severity</th><th class="dim">Risk</th><th>Mitigation</th></tr></thead>
+            <tbody>
+              <tr><td><span class="sev high">High</span></td><td class="dim">[risk]</td><td>[mitigation]</td></tr>
+              <tr><td><span class="sev med">Medium</span></td><td class="dim">[risk]</td><td>[mitigation]</td></tr>
+              <tr><td><span class="sev low">Low</span></td><td class="dim">[risk]</td><td>[mitigation]</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p class="eyebrow" style="margin-top: 2.6rem">Open technical questions</p>
+        <h2>Answer before implementation</h2>
+        <div class="questions">
+          <div class="q"><span class="qtag">TBD</span><p>[Open question.]</p></div>
+          <div class="q"><span class="qtag">Resolved</span><p>[Settled question + the answer.]</p></div>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="wrap">
+        <p>Technical Design — [Title] · [Date] · [Team]</p>
+        <p class="src">Sources: [files / references consulted]</p>
+      </div>
+    </footer>
+  </body>
+</html>
