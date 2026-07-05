@@ -24,9 +24,9 @@
     {
       "name": "technical-pm",
       "source": "./technical-pm",
-      "description": "Composable, on-demand product-management skills — demand capture, theme synthesis, PRD authoring, technical design, work-item translation, and exec narrative — plus PPT/SDD/HTML/Word/PDF/Excel document generation skills.",
-      "category": "productivity",
-      "keywords": ["product-management", "prd", "roadmap", "themes", "pptx", "sdd", "html", "memo", "docx", "pdf", "xlsx"]
+      "description": "Composable, on-demand product-management skills — demand capture, theme synthesis, PRD authoring, technical design, work-item translation, and exec narrative.", 
+      "category": "dev-ops",
+      "keywords": ["product-management", "prd", "roadmap", "themes"]
     },
     {
       "name": "better-planning",
@@ -34,6 +34,13 @@
       "description": "Custom planning system with strict role separation — a read-only planner (Opus), a scoped research agent (Haiku), and a sole CLAUDE.md writer (Sonnet). Invoke via /plan <task>.",
       "category": "devops",
       "keywords": ["planning", "agents", "claude-md", "coding", "subagents"]
+    },
+    {
+      "name": "office-tools",
+      "source": "./office-tools",
+      "description": "Standard suite of office-related skills, such as powerpoint and Excel.", 
+      "category": "productivity",
+      "keywords": ["pptx", "xlsx", "html"] 
     }
   ]
 }

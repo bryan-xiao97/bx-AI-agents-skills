@@ -6,12 +6,12 @@ Composable, on-demand product-management skills. Each is usable on its own and w
 
 | Skill | Output folder | Output |
 |-------|--------------|--------|
-| `technical-pm-capture-demand` | `User_Demand/` | Structured demand note from meeting transcripts, demo notes, or stakeholder emails |
-| `technical-pm-surface-themes` | `Themes_Evidence/` | Theme cluster doc — each theme cites ≥2 evidence sources |
-| `technical-pm-write-prd` | `PRD_Decisions/` | Functional PRD with decisions, alternatives rejected, and constraints named |
-| `technical-pm-technical-design` | `TechnicalDesign/` | Candidate approaches weighed on trade-offs with a recommended path, plus the chosen architecture, data flow, integrations, NFRs, and risks |
-| `technical-pm-translate-to-workitems` | `Delivery_WorkItems/` | Epic → Feature → Story → Task draft Markdown files |
-| `technical-pm-exec-narrative` | `Prioritization_Strategy/` | One-page exec summary; optional PowerPoint deck |
+| `capture-demand` | `doc/User_Demand/` | Structured demand note from meeting transcripts, demo notes, or stakeholder emails |
+| `surface-themes` | `doc/Themes_Evidence/` | Theme cluster doc — each theme cites ≥2 evidence sources |
+| `write-prd` | `doc/PRD_Decisions/` | Functional PRD with decisions, alternatives rejected, and constraints named |
+| `technical-design` | `doc/TechnicalDesign/` | Candidate approaches weighed on trade-offs with a recommended path, plus the chosen architecture, data flow, integrations, NFRs, and risks |
+| `translate-to-workitems` | `doc/Delivery_WorkItems/` | Epic → Feature → Story → Task draft Markdown files |
+| `exec-narrative` | `doc/Prioritization_Strategy/` | One-page exec summary; optional PowerPoint deck |
 
 ## Additional skills
 

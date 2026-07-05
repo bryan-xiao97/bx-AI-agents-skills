@@ -1,10 +1,10 @@
 ---
-name: technical-pm-capture-demand
+name: capture-demand
 description: >
-  Captures raw stakeholder input — meeting transcripts, demo notes, emails, architecture reviews — and produces a structured demand note. Use whenever the user shares unstructured meeting notes, says "capture this feedback", "log what we discussed", "write up the demo notes", "document this stakeholder call", or provides a chunk of raw stakeholder input that needs to be turned into a referenceable artifact. Writes a Markdown note to a User_Demand/ folder (or wherever the user points). Also use proactively when the user pastes a block of unstructured notes alongside a product name.
+  Captures raw stakeholder input — meeting transcripts, demo notes, emails, architecture reviews — and produces a structured demand note. Use whenever the user shares unstructured meeting notes, says "capture this feedback", "log what we discussed", "write up the demo notes", "document this stakeholder call", or provides a chunk of raw stakeholder input that needs to be turned into a referenceable artifact. Writes a Markdown note to a doc/User_Demand/ folder (or wherever the user points). Also use proactively when the user pastes a block of unstructured notes alongside a product name.
 ---
 
-# technical-pm-capture-demand
+# capture-demand
 
 Turns raw stakeholder input into a structured demand note — a referenceable artifact that stands on its own and can later be cited as evidence when synthesizing themes.
 
@@ -20,7 +20,7 @@ Confirm:
 
 ### Step 2 — Choose where to save
 
-Look for a folder matching `User_Demand/` (or similar) inside the product directory. If it does not exist, ask the user to confirm the path before writing.
+Look for a folder matching `doc/User_Demand/` (or similar) inside the product directory. If it does not exist, ask the user to confirm the path before writing.
 
 ### Step 3 — Match existing format
 

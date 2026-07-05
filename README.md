@@ -34,12 +34,12 @@ Six composable product-management skills, each usable on its own and invoked on 
 
 | Skill | Output |
 |-------|--------|
-| `technical-pm-capture-demand` | Structured demand note from meeting transcripts, demo notes, or stakeholder emails |
-| `technical-pm-surface-themes` | Clustered theme document, each theme backed by ≥2 demand sources |
-| `technical-pm-write-prd` | Functional PRD with decisions, alternatives rejected, and constraints named |
-| `technical-pm-technical-design` | Candidate approaches weighed on trade-offs with a recommended path forward, plus the chosen architecture, data flow, integrations, NFRs, and risks — every decision traced to a PRD decision |
-| `technical-pm-translate-to-workitems` | Epic → Feature → Story → Task drafts as local Markdown files |
-| `technical-pm-exec-narrative` | One-page executive summary derived from PRD decisions and a work-item plan |
+| `capture-demand` | Structured demand note from meeting transcripts, demo notes, or stakeholder emails |
+| `surface-themes` | Clustered theme document, each theme backed by ≥2 demand sources |
+| `write-prd` | Functional PRD with decisions, alternatives rejected, and constraints named |
+| `technical-design` | Candidate approaches weighed on trade-offs with a recommended path forward, plus the chosen architecture, data flow, integrations, NFRs, and risks — every decision traced to a PRD decision |
+| `translate-to-workitems` | Epic → Feature → Story → Task drafts as local Markdown files |
+| `exec-narrative` | One-page executive summary derived from PRD decisions and a work-item plan |
 
 **Additional skills:**
 
@@ -100,7 +100,7 @@ Skills are auto-discovered under `~/.gemini/extensions/<plugin>/skills/`. Subage
 
 ### After installation
 
-Skills are available as slash commands (e.g. `/az-devops`, `/technical-pm-write-prd`, `/planner`). Subagents (`explore-scoped`, `update-context`) are available via the agent picker.
+Skills are available as slash commands (e.g. `/az-devops`, `/write-prd`, `/planner`). Subagents (`explore-scoped`, `update-context`) are available via the agent picker.
 
 ## Repository Layout
 
@@ -135,12 +135,12 @@ bx-AI-agents-skills/
 │       ├── docx/
 │       ├── pdf/
 │       ├── xlsx/
-│       ├── technical-pm-capture-demand/
-│       ├── technical-pm-exec-narrative/
-│       ├── technical-pm-surface-themes/
-│       ├── technical-pm-technical-design/
-│       ├── technical-pm-translate-to-workitems/
-│       ├── technical-pm-write-prd/
+│       ├── capture-demand/
+│       ├── exec-narrative/
+│       ├── surface-themes/
+│       ├── technical-design/
+│       ├── translate-to-workitems/
+│       ├── write-prd/
 │       └── sdd-generator/
 └── better-planning/
     ├── .claude-plugin/plugin.json

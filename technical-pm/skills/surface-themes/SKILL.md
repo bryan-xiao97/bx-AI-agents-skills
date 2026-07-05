@@ -1,10 +1,10 @@
 ---
-name: technical-pm-surface-themes
+name: surface-themes
 description: >
-  Synthesizes a set of demand notes — or any raw stakeholder feedback the user provides — into a theme cluster document. Use whenever the user says "surface themes", "what are the patterns", "synthesize the feedback", "find the common threads", "what do users actually want", or is ready to move from raw demand to a structured view of product needs. Each theme must cite at least 2 evidence sources from the provided input. Writes to the Themes_Evidence/ folder.
+  Synthesizes a set of demand notes — or any raw stakeholder feedback the user provides — into a theme cluster document. Use whenever the user says "surface themes", "what are the patterns", "synthesize the feedback", "find the common threads", "what do users actually want", or is ready to move from raw demand to a structured view of product needs. Each theme must cite at least 2 evidence sources from the provided input. Writes to the doc/Themes_Evidence/ folder.
 ---
 
-# technical-pm-surface-themes
+# surface-themes
 
 Clusters demand evidence into named themes. Every theme is grounded; nothing is invented.
 
@@ -12,7 +12,7 @@ Clusters demand evidence into named themes. Every theme is grounded; nothing is 
 
 ### Step 1 — Gather the evidence
 
-Work from whatever the user provides: pasted notes, one or more files, or a folder of demand notes (e.g. a `User_Demand/` folder). If they point at a folder, read all `.md` files in it. If no input is supplied, ask for it before proceeding — themes need evidence to cluster.
+Work from whatever the user provides: pasted notes, one or more files, or a folder of demand notes (e.g. a `doc/User_Demand/` folder). If they point at a folder, read all `.md` files in it. If no input is supplied, ask for it before proceeding — themes need evidence to cluster.
 
 ### Step 2 — Extract evidence units
 
@@ -43,7 +43,7 @@ Present the clusters before writing. Ask the user to:
 
 ### Step 6 — Write the file
 
-Write the final document to `Themes_Evidence/`. Filename: `{Product} - Themes - {MM.DD}.md`. Report the full path on completion.
+Write the final document to `doc/Themes_Evidence/`. Filename: `{Product} - Themes - {MM.DD}.md`. Report the full path on completion.
 
 ---
 

@@ -1,10 +1,10 @@
 ---
-name: technical-pm-technical-design
+name: technical-design
 description: >
-  Turns a functional PRD — or a problem description the user provides — plus technical constraints into a technical design document. Reasons through multiple candidate approaches for each significant design problem, weighs their trade-offs, and recommends a path forward — then records the decisions and specs the chosen architecture (components, data flow, integrations, NFRs, risks). Use whenever the user says "technical design", "design the architecture", "think through the technical considerations", "what are the options", "weigh the trade-offs", "how should we build this", "what's the recommended approach", or is ready to turn requirements into a build-ready design. Every recommendation traces to a decision or requirement and the constraints that drove it. Writes to the TechnicalDesign/ folder.
+  Turns a functional PRD — or a problem description the user provides — plus technical constraints into a technical design document. Reasons through multiple candidate approaches for each significant design problem, weighs their trade-offs, and recommends a path forward — then records the decisions and specs the chosen architecture (components, data flow, integrations, NFRs, risks). Use whenever the user says "technical design", "design the architecture", "think through the technical considerations", "what are the options", "weigh the trade-offs", "how should we build this", "what's the recommended approach", or is ready to turn requirements into a build-ready design. Every recommendation traces to a decision or requirement and the constraints that drove it. Outputs a self-contained HTML document to the doc/TechnicalDesign/ folder.
 ---
 
-# technical-pm-technical-design
+# technical-design
 
 Produces a technical design document. The functional requirements say what and why; this works out how — by reasoning through options, not by asserting a single answer. For each significant design problem it lays out candidate approaches, weighs their trade-offs, and recommends one. Every recommendation traces to a decision or requirement and the constraints that drove it; nothing is invented.
 
@@ -12,7 +12,7 @@ Produces a technical design document. The functional requirements say what and w
 
 ### Step 1 — Gather the requirements
 
-Work from whatever the user provides: a PRD, pasted requirements, or a direct description of the decisions and goals. If they point at a `PRD_Decisions/` folder, read the most recent document. If the input is sparse, proceed with `[TBD]` placeholders and flag the gaps clearly. If nothing is supplied, ask for the requirements before designing.
+Work from whatever the user provides: a PRD, pasted requirements, or a direct description of the decisions and goals. If they point at a `doc/PRD_Decisions/` folder, read the most recent document. If the input is sparse, proceed with `[TBD]` placeholders and flag the gaps clearly. If nothing is supplied, ask for the requirements before designing.
 
 Note the decisions, audience, constraints, and success signals in the source material — these anchor every technical choice that follows and become the yardstick for comparing approaches.
 
@@ -76,112 +76,28 @@ Present the full draft. Ask the user to:
 
 ### Step 10 — Write the file
 
-Write to `TechnicalDesign/`. Filename: `{Product} - Technical Design - {MM.DD}.md`. Report the full path on completion.
+Write a **self-contained HTML document** to `doc/TechnicalDesign/`. Filename: `{Product} - Technical Design - {MM.DD}.html`. Report the full path on completion.
+
+- Write a single HTML file with all CSS inlined in one `<style>` block — it must open in any browser and print to PDF with no external dependencies.
+- Use semantic HTML (`<h1>`–`<h3>`, `<table>`, `<ol>`/`<ul>`, `<section>`). Keep the sections and their order below; that structure is the contract.
+- Replace every `{placeholder}` and drop any `[TBD]` that got resolved. Grep the output for leftover `{` / `[TBD]` before declaring done.
+
+**Styling — light, readable defaults, not a rigid system.** Aim for a calm document: charcoal text on white, a serif family for headings, sans for body, mono for small labels, and one warm accent. In the comparison-heavy parts, let color carry meaning — a green tint for the recommended option, a red/coral tint for rejected ones, amber for caution. Keep it restrained; don't over-engineer the CSS. **If the user wants the full house style, hand the content to the `bx-html-branding` skill** — its `.techdoc` kit is purpose-built for this document.
 
 ---
 
 ## Output format
 
-````markdown
-# Technical Design — {Product} — {YYYY-MM-DD}
+Render these sections, in this order. Each was a heading in the former Markdown layout; keep them as `<h2>` sections (with the problem write-ups as `<h3>` subsections).
 
-_PRD sourced from: [`PRD_Decisions/{prd-filename}`]({relative path})_
-
-**Priorities driving trade-offs:** {What breaks ties — e.g., time-to-market > cost > operational simplicity. From Step 2.}
-
----
-
-## Design problems and approaches
-
-### Problem 1: {Short title}
-
-**At stake:** {One sentence — what this decision determines, and which PRD decision or constraint forces it.}
-
-**Candidate approaches:**
-
-- **Approach A — {name}:** {What it is.}
-  - *Pros:* {…}
-  - *Cons:* {…}
-- **Approach B — {name}:** {What it is.}
-  - *Pros:* {…}
-  - *Cons:* {…}
-- **Approach C — {name}:** {What it is.} *(omit if only two real options)*
-  - *Pros:* {…}
-  - *Cons:* {…}
-
-**Trade-offs:**
-
-| Dimension | Approach A | Approach B | Approach C |
-|---|---|---|---|
-| {Dimension that discriminates} | {…} | {…} | {…} |
-| {Dimension that discriminates} | {…} | {…} | {…} |
-
-**Recommendation: Approach {X}.** {Why it wins given the PRD decisions, constraints, and stated priorities. Note any assumption the recommendation rests on.}
-
-### Problem 2: {Short title}
-
-...
-
----
-
-## Decision record
-
-| Design problem | Chosen approach | Why | Alternatives rejected | PRD decision |
-|---|---|---|---|---|
-| {Problem 1 title} | {Approach X} | {One line} | {The other approaches} | {Decision title from the PRD} |
-| {Problem 2 title} | {Approach Y} | {One line} | {…} | {…} |
-
----
-
-## System architecture
-
-{Describe the high-level system structure that follows from the recommended approaches. Use a text block diagram or prose. Name every major component.}
-
-```
-[Component A] → [Component B] → [Component C]
-                      ↑
-               [External System]
-```
-
-## Components
-
-| Component | Purpose |
-|---|---|
-| {Name} | {One-line description} |
-| {Name} | {One-line description} |
-
-## Data flow
-
-1. {Step — which component, what happens, what data moves}
-2. {Step}
-3. {Step}
-
-## Integration points
-
-| System / API | Direction | Description |
-|---|---|---|
-| {Name} | In / Out / Both | {One sentence} |
-
-## Dependencies
-
-**Upstream (this system relies on):** {list}
-**Downstream (relies on this system):** {list}
-
----
-
-## Non-functional requirements
-
-| Requirement | Target |
-|---|---|
-| {Performance / scale / security / availability / compliance} | {Observable or measurable target} |
-
-## Risks and mitigations
-
-| Risk | Mitigation |
-|---|---|
-| {Technical risk, including any introduced by the chosen approach} | {Mitigation, or [TBD] open question} |
-
-## Open technical questions
-
-- [TBD] {Question that must be answered before implementation}
-````
+- **Title block** — document title (`{Product}` technical design) and a metadata line: date, a link to the source PRD (`doc/PRD_Decisions/{prd-filename}`), and the priorities that break trade-off ties (from Step 2).
+- **Design problems and approaches** — one subsection per problem from Step 5. Each states *At stake* (one sentence), then 2–3 candidate approaches with their pros and cons, then a trade-off table comparing them across the discriminating dimensions, then a recommendation line naming the chosen approach and why. Visually distinguish the recommended option (e.g. a green-tinted column or card) and rejected ones.
+- **Decision record** — a table: design problem, chosen approach, why (one line), alternatives rejected, and the PRD decision it serves.
+- **System architecture** — prose describing the high-level structure, plus a simple text/block diagram (a `<pre>` block is fine) naming every major component.
+- **Components** — a table of each component/service and its one-line purpose.
+- **Data flow** — a numbered list of steps: which component acts, what happens, what data moves.
+- **Integration points** — a table: system/API, direction (in/out/both), one-sentence description.
+- **Dependencies** — upstream (what this system relies on) and downstream (what relies on it).
+- **Non-functional requirements** — a table of observable/measurable targets (performance, scale, security, availability, compliance).
+- **Risks and mitigations** — a table pairing each technical risk (including any introduced by the chosen approach) with a mitigation or open question; mark severity.
+- **Open technical questions** — a list of `[TBD]` questions that must be answered before implementation.
