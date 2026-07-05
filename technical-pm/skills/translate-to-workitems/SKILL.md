@@ -1,10 +1,10 @@
 ---
-name: technical-pm-translate-to-workitems
+name: translate-to-workitems
 description: >
-  Decomposes a PRD — and a technical design, if the user has one — into an Epic → Feature → Story → Task hierarchy of work item drafts. Use whenever the user says "translate to work items", "break this down", "create the work items", "decompose into tasks", "what are the work items for this PRD", or is ready to turn requirements into deliverable units. Produces local .md files with placeholder IDs — no external system calls, no ADO reads or writes. Writes to the Delivery_WorkItems/ folder.
+  Decomposes a PRD — and a technical design, if the user has one — into an Epic → Feature → Story → Task hierarchy of work item drafts. Use whenever the user says "translate to work items", "break this down", "create the work items", "decompose into tasks", "what are the work items for this PRD", or is ready to turn requirements into deliverable units. Produces local .md files with placeholder IDs — no external system calls, no ADO reads or writes. Writes to the doc/Delivery_WorkItems/ folder.
 ---
 
-# technical-pm-translate-to-workitems
+# translate-to-workitems
 
 Decomposes PRD decisions into a local work item hierarchy. Placeholder IDs throughout — the user assigns real IDs when posting to their delivery system.
 
@@ -12,13 +12,13 @@ Decomposes PRD decisions into a local work item hierarchy. Placeholder IDs throu
 
 ### Step 1 — Gather the PRD and any technical design
 
-Work from whatever the user provides: a PRD, pasted requirements, or a direct description of the decisions and scope. If they point at a `PRD_Decisions/` folder, read the most recent `.md` file. If only a partial description is available, work from it and flag gaps with `[TBD]`. If nothing is supplied, ask for the requirements before decomposing.
+Work from whatever the user provides: a PRD, pasted requirements, or a direct description of the decisions and scope. If they point at a `doc/PRD_Decisions/` folder, read the most recent `.md` file. If only a partial description is available, work from it and flag gaps with `[TBD]`. If nothing is supplied, ask for the requirements before decomposing.
 
-Also read a technical design if the user has one (e.g. the most recent `.md` file in a `TechnicalDesign/` folder) — use it to inform Task-level decomposition, since components, integration points, and architecture decisions often map directly to tasks. If there is no design, proceed from the PRD alone and note that tasks may need technical refinement once a design exists.
+Also read a technical design if the user has one (e.g. the most recent `.md` file in a `doc/TechnicalDesign/` folder) — use it to inform Task-level decomposition, since components, integration points, and architecture decisions often map directly to tasks. If there is no design, proceed from the PRD alone and note that tasks may need technical refinement once a design exists.
 
 ### Step 2 — Detect existing format
 
-Check `Delivery_WorkItems/` for existing `.md` work item files. If files are present, open one and note:
+Check `doc/Delivery_WorkItems/` for existing `.md` work item files. If files are present, open one and note:
 - Header table fields and their order
 - ID format
 - Hierarchy notation in `## Hierarchy`
@@ -59,7 +59,7 @@ Wait for confirmation or corrections.
 
 ### Step 6 — Write all files
 
-Write one `.md` per work item to `Delivery_WorkItems/`, plus an `_index.md`. Report the filenames and count on completion.
+Write one `.md` per work item to `doc/Delivery_WorkItems/`, plus an `_index.md`. Report the filenames and count on completion.
 
 ---
 
@@ -91,8 +91,8 @@ Write one `.md` per work item to `Delivery_WorkItems/`, plus an `_index.md`. Rep
 
 {For Epics/Features: capability description. For User Stories: "As a {role}, I want {action} so that {outcome}." For Tasks: specific implementation step.}
 
-**PRD reference:** {FR ID from the PRD Scope section (e.g., FR-3) if present; otherwise decision title or section name from PRD_Decisions/}
-**Technical design reference:** {Component, integration, or architecture decision from TechnicalDesign/, or [none] if no design exists yet}
+**PRD reference:** {FR ID from the PRD Scope section (e.g., FR-3) if present; otherwise decision title or section name from doc/PRD_Decisions/}
+**Technical design reference:** {Component, integration, or architecture decision from doc/TechnicalDesign/, or [none] if no design exists yet}
 ```
 
 ### Index file: `_index.md`
@@ -100,7 +100,7 @@ Write one `.md` per work item to `Delivery_WorkItems/`, plus an `_index.md`. Rep
 ```markdown
 # Work Item Index — {Product}
 
-_Generated from [`PRD_Decisions/{prd-filename}`]({relative path}) and [`TechnicalDesign/{design-filename}`]({relative path}) on {YYYY-MM-DD}._
+_Generated from [`doc/PRD_Decisions/{prd-filename}`]({relative path}) and [`doc/TechnicalDesign/{design-filename}`]({relative path}) on {YYYY-MM-DD}._
 
 ## Hierarchy
 

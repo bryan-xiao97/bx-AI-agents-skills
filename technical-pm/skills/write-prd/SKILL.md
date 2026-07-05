@@ -1,18 +1,18 @@
 ---
-name: technical-pm-write-prd
+name: write-prd
 description: >
-  Turns a themes document — or any requirements input the user provides — into a functional Product Requirements Document (PRD): problem statement, audience, scope (functional requirements and out-of-scope items), decisions with alternatives rejected, constraints, and success signals. Use whenever the user says "write a PRD", "document the decisions", "write up the requirements", "create the product spec", "formalize this into a PRD", or is ready to turn a problem into formal requirements. The PRD is purely functional — technical design is a separate concern. Writes to the PRD_Decisions/ folder.
+  Turns a themes document — or any requirements input the user provides — into a functional Product Requirements Document (PRD): problem statement, audience, scope (functional requirements and out-of-scope items), decisions with alternatives rejected, constraints, and success signals. Use whenever the user says "write a PRD", "document the decisions", "write up the requirements", "create the product spec", "formalize this into a PRD", or is ready to turn a problem into formal requirements. The PRD is purely functional — technical design is a separate concern. Writes to the doc/PRD_Decisions/ folder.
 ---
 
-# technical-pm-write-prd
+# write-prd
 
-Produces a functional PRD. Every decision traces to a theme or stated requirement; sources are cited by name. This document is purely functional — technical design is a separate concern, handled by `/technical-pm-technical-design` when needed.
+Produces a functional PRD. Every decision traces to a theme or stated requirement; sources are cited by name. This document is purely functional — technical design is a separate concern, handled by `/technical-design` when needed.
 
 ## Workflow
 
 ### Step 1 — Gather the source material
 
-Work from whatever the user provides: a themes document, pasted notes, or a direct description of the problem and requirements. If they point at a `Themes_Evidence/` folder and several docs exist, read the most recent (by date in the filename or file modification time). If the input is sparse, proceed with `[TBD]` placeholders and flag the gaps clearly. If nothing is supplied, ask for the problem or requirements before drafting.
+Work from whatever the user provides: a themes document, pasted notes, or a direct description of the problem and requirements. If they point at a `doc/Themes_Evidence/` folder and several docs exist, read the most recent (by date in the filename or file modification time). If the input is sparse, proceed with `[TBD]` placeholders and flag the gaps clearly. If nothing is supplied, ask for the problem or requirements before drafting.
 
 ### Step 2 — Derive the decision points
 
@@ -59,7 +59,7 @@ Present the full draft. Ask the user to:
 
 ### Step 6 — Write the file
 
-Write to `PRD_Decisions/`. Filename: `{Product} - PRD - {MM.DD}.md`. Report the full path on completion.
+Write to `doc/PRD_Decisions/`. Filename: `{Product} - PRD - {MM.DD}.md`. Report the full path on completion.
 
 ---
 
@@ -68,7 +68,7 @@ Write to `PRD_Decisions/`. Filename: `{Product} - PRD - {MM.DD}.md`. Report the 
 ````markdown
 # PRD — {Product} — {YYYY-MM-DD}
 
-_Themes sourced from: [`Themes_Evidence/{themes-filename}`]({relative path})_
+_Themes sourced from: [`doc/Themes_Evidence/{themes-filename}`]({relative path})_
 
 ---
 
