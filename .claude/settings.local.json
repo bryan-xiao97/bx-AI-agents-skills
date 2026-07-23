@@ -9,7 +9,8 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:geminicli.com)",
       "WebFetch(domain:codelabs.developers.google.com)",
-      "WebFetch(domain:developers.googleblog.com)"
+      "WebFetch(domain:developers.googleblog.com)",
+      "WebFetch(domain:developers.openai.com)"
     ]
   },
   "sandbox": {

@@ -1,0 +1,279 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>OpenAI Codex: Eight-Pillar Assessment</title><style>
+:root{--ink:#14213d;--muted:#5f6b7a;--paper:#f7f9fc;--white:#fff;--cyan:#00a6a6;--blue:#2563eb;--line:#d9e2ef;--navy:#081a33;--amber:#f4b942;--shadow:0 18px 45px rgba(8,26,51,.10)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--paper);color:var(--ink);font-family:"Aptos","Segoe UI",Arial,sans-serif;line-height:1.68}.progress{position:fixed;inset:0 auto auto 0;height:4px;background:linear-gradient(90deg,var(--cyan),var(--blue));width:0;z-index:50}.shell{display:grid;grid-template-columns:280px minmax(0,1fr)}aside{position:sticky;top:0;height:100vh;background:var(--navy);color:#d8e6f5;padding:28px 22px;overflow:auto}.brand{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#75e6e6;font-weight:800;margin-bottom:30px}.toc-title{font:700 28px/1.05 Georgia,serif;color:white;margin:0 0 20px}.toc a{display:block;color:#aebfd3;text-decoration:none;padding:7px 10px;border-left:2px solid transparent;font-size:13px}.toc a:hover,.toc a.active{color:white;border-color:var(--cyan);background:rgba(255,255,255,.06)}.toc-l3{margin-left:10px}.main{min-width:0}.hero{min-height:76vh;color:white;background:radial-gradient(circle at 84% 18%,rgba(0,166,166,.25),transparent 28%),linear-gradient(135deg,#081a33 0%,#12345e 62%,#0a6a77 145%);padding:80px clamp(28px,7vw,100px);display:flex;align-items:center}.hero-inner{max-width:1050px}.eyebrow{font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#7de4df;font-weight:800}.hero h1{font:700 clamp(46px,7vw,92px)/.96 Georgia,serif;letter-spacing:-.045em;margin:18px 0 24px;max-width:950px}.hero p{font-size:20px;max-width:760px;color:#d8e6f5}.loop{display:flex;flex-wrap:wrap;gap:8px;margin-top:38px}.loop span{border:1px solid rgba(255,255,255,.22);padding:8px 12px;border-radius:999px;font-size:12px}.loop b{color:#59ddd5}.content{max-width:980px;margin:0 auto;padding:76px clamp(24px,6vw,84px) 120px}.content>h2{font:700 42px/1.1 Georgia,serif;letter-spacing:-.025em;margin:90px 0 24px;padding-top:20px;border-top:1px solid var(--line)}.content>h2:first-child{margin-top:0}.content h3{font:700 29px/1.2 Georgia,serif;margin:45px 0 18px}.content h4{font-size:18px;margin-top:30px}.content h5{font-size:15px;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin:28px 0 8px}.content p{margin:0 0 17px}.content ul{padding-left:22px}.content li{margin:7px 0}.content a{color:#0759c7;text-underline-offset:3px}.content strong{color:#0a3568}.thesis{border:0;margin:34px 0;padding:30px 34px;background:var(--navy);color:white;box-shadow:var(--shadow);font:700 25px/1.35 Georgia,serif;position:relative}.thesis:before{content:"VERDICT";display:block;font:800 11px/1 "Aptos",sans-serif;letter-spacing:.18em;color:#6ee7df;margin-bottom:14px}.pillar{position:relative;margin:58px -18px;padding:38px 42px 42px;background:var(--white);border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden}.pillar:before{content:attr(data-pillar);position:absolute;right:-8px;top:-36px;font:800 150px/1 Georgia,serif;color:#edf3fa;z-index:0}.pillar>*{position:relative;z-index:1}.pillar-kicker{font-size:11px;letter-spacing:.18em;color:var(--cyan);font-weight:900}.pillar h3{font-size:38px;margin:8px 0 24px;max-width:700px}.pillar h4{border-left:4px solid var(--cyan);padding-left:14px}.content hr{border:0;border-top:1px solid var(--line)}code{background:#eef3f8;padding:.12em .35em;border-radius:3px}footer{background:#07172d;color:#aebfd3;padding:38px;text-align:center;font-size:13px}.mobile-menu{display:none}
+table.scorecard{width:100%;border-collapse:collapse;margin:26px 0;font-size:14px;box-shadow:var(--shadow)}.scorecard th,.scorecard td{text-align:left;padding:12px 15px;border-bottom:1px solid var(--line);vertical-align:top}.scorecard th{font:800 11px/1 "Aptos",sans-serif;letter-spacing:.12em;text-transform:uppercase;color:var(--blue);background:#eef4fb}.scorecard tr:last-child td{border-bottom:0}.scorecard td:first-child{font-weight:700;color:#0a3568}.scorecard tbody tr:nth-child(even){background:#fbfcfe}.verdict{display:inline-block;font:800 10px/1.3 "Aptos",sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:5px 9px;border-radius:999px;white-space:nowrap}.v-strong{background:#d3f3ee;color:#046a63}.v-mixed{background:#fbe8c4;color:#8a5a00}.v-cond{background:#dfe9fb;color:#1749a8}.assess{border-left:4px solid var(--cyan);background:#eefbf9;padding:14px 18px;margin:4px 0 18px;font-weight:700;color:#0a3568;font-size:16px}.note{background:#fff8ec;border:1px solid #f0dca8;padding:18px 22px;margin:26px 0;font-size:14.5px;border-radius:6px;line-height:1.6}.note b{color:#8a5a00}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:14px 30px;margin:14px 0 6px}.twocol h5{margin-top:6px}.pillwrap .assess{background:#eefbf9}
+@media(max-width:900px){.shell{display:block}aside{display:none}.hero{min-height:auto;padding-top:72px;padding-bottom:72px}.hero h1{font-size:48px}.content{padding-top:45px}.pillar{margin:42px 0;padding:28px 24px}.pillar h3{font-size:31px}.content>h2{font-size:35px}.twocol{grid-template-columns:1fr;gap:0}table.scorecard{display:block;overflow-x:auto}.mobile-menu{display:block;position:fixed;right:16px;bottom:16px;z-index:40;background:var(--navy);color:white;border:0;border-radius:999px;padding:12px 16px;box-shadow:var(--shadow)}}
+@media print{aside,.progress,.mobile-menu{display:none}.shell{display:block}.hero{min-height:auto;background:#081a33!important;-webkit-print-color-adjust:exact}.content{max-width:none}.pillar{break-inside:avoid;box-shadow:none}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style></head><body><div class="progress"></div><div class="shell"><aside><div class="brand">Companion Assessment</div><div class="toc-title">OpenAI Codex,<br>against eight pillars.</div><nav class="toc"><a class="toc-l2" href="#executive-summary">Executive Summary</a><a class="toc-l2" href="#1-scope-and-method">1. Scope, Method and Grounding</a><a class="toc-l2" href="#2-scorecard">2. Assessment Scorecard</a><a class="toc-l2" href="#3-overall">3. Overall Assessment</a><a class="toc-l2" href="#4-pillar-assessment">4. Pillar-by-Pillar Assessment</a><a class="toc-l2" href="#5-gap-analysis">5. Codex Gap Analysis</a><a class="toc-l2" href="#6-baseline">6. Recommended Codex Baseline</a><a class="toc-l2" href="#7-conclusion">7. Conclusion</a><a class="toc-l2" href="#references">References</a></nav></aside><main class="main"><header class="hero"><div class="hero-inner"><div class="eyebrow">Companion assessment &middot; OpenAI Codex &middot; July 2026</div><h1>OpenAI Codex: Eight-Pillar Assessment</h1><p>A companion to the Eight Pillars framework, applying the same lens used for Claude Code to OpenAI Codex across terminal, IDE, cloud and GitHub.</p><div class="loop"><span>Specify</span><b>&rarr;</b><span>Decompose</span><b>&rarr;</b><span>Contextualize</span><b>&rarr;</b><span>Execute</span><b>&rarr;</b><span>Observe</span><b>&rarr;</b><span>Verify</span><b>&rarr;</b><span>Integrate</span><b>&rarr;</b><span>Review</span></div></div></header><article class="content">
+
+<h2 id="executive-summary" style="margin-top:0">Executive Summary</h2>
+<p>This report assesses <strong>OpenAI Codex</strong> against the eight-pillar framework for agentic software engineering, mirroring the structure used for the Claude Code assessment. Codex is OpenAI's coding agent for software development. It plans and runs multi-step coding tasks across the terminal (Codex CLI), the editor (IDE extension), the cloud (isolated remote environments) and GitHub, powered by GPT&#8209;5&#8209;Codex, a version of GPT&#8209;5 optimized for agentic coding.</p>
+<p>Codex implements most of the primitives the framework requires: an iterative model-and-tool loop grounded in real workspace evidence, repository instructions through <code>AGENTS.md</code>, subagents, MCP-based extensibility, a rich tool surface, OS-level sandboxing, layered approval policies, a reviewer-agent guardrail, a cloud execution surface and GitHub pull-request code review.</p>
+<p>Codex's design center of gravity differs from Claude Code. It leads with <strong>OS-enforced isolation, default-off network egress and a reviewer agent that screens risky actions</strong>. It is comparatively thinner on <strong>programmable lifecycle hooks, path-scoped rule files and automatic learned memory</strong>. As the framework argues, these primitives do not by themselves produce a mature operating model. Teams must still decide which checks are mandatory, who owns acceptance and how cost and review capacity are bounded.</p>
+<blockquote class="thesis"><p>Codex is a strong, sandbox-first coding harness. Its native isolation and approval controls are among the most robust available, but it externalizes verification enforcement to CI and code review rather than local blocking gates, and its economic governance, like every current harness, remains a configuration and organizational responsibility.</p></blockquote>
+<p><strong>The eight pillars, in brief:</strong> (1) stateful reconciliation loop, (2) specification and unit-of-work design, (3) context and knowledge engineering, (4) tool-enabled execution environment, (5) harness-enforced verification, (6) single accountable coordination authority, (7) isolated execution with conditional concurrency, (8) observable, economical and bounded operation. Each is assessed for Codex below.</p>
+<hr />
+
+<h2 id="1-scope-and-method">1. Scope, Method and Grounding</h2>
+<p>This is a <strong>companion document</strong>. The pillar definitions, failure modes and recommended organizational practices are established in the parent framework report and are not restated here. This report evaluates how the OpenAI Codex product surface implements each pillar, and where responsibility falls to the team rather than the tool.</p>
+<h4>Product surface assessed</h4>
+<ul>
+<li><strong>Codex CLI</strong> and the IDE extension, running locally inside an OS-level sandbox</li>
+<li><strong>Codex cloud</strong>, running tasks in isolated OpenAI-managed environments that return a diff or pull request</li>
+<li><strong>GitHub integration</strong>, including Codex code review on pull requests</li>
+<li>Configuration through <code>AGENTS.md</code>, <code>config.toml</code>, profiles, custom subagents and MCP servers</li>
+</ul>
+<div class="note"><b>Grounding and currency.</b> This assessment reflects Codex as documented in mid-2026 (report dated July 20, 2026), drawn from the official OpenAI Codex documentation and product announcements cited in the References. Codex ships rapidly and specific keys, defaults and previews may change. Two points are flagged for honesty rather than asserted: (1) Codex surfaces an in-session plan while it works, but the current documentation does not describe a durable, harness-native task ledger or persisted plan file, so plan state is treated here as primarily in-context. (2) Codex skills and the granular approval and reviewer-agent controls are evolving surfaces. Where a capability could not be fully confirmed, the text says so rather than overstating it. No capability is claimed that the sources do not support.</div>
+<hr />
+
+<h2 id="2-scorecard">2. Assessment Scorecard</h2>
+<p>A one-line verdict per pillar. Detail and caveats follow in Section 4.</p>
+<table class="scorecard"><thead><tr><th style="width:34%">Pillar</th><th style="width:26%">Verdict</th><th>Where responsibility falls to the team</th></tr></thead><tbody>
+<tr><td>1 &middot; Stateful reconciliation loop</td><td><span class="verdict v-strong">Strong loop, conditional durability</span></td><td>Persist durable state in git, PRs or an issue tracker; no harness-native ledger</td></tr>
+<tr><td>2 &middot; Specification &amp; unit-of-work</td><td><span class="verdict v-cond">Supported, judgment-dependent</span></td><td>Human owns spec quality and decomposition boundaries</td></tr>
+<tr><td>3 &middot; Context &amp; knowledge engineering</td><td><span class="verdict v-strong">Solid, thinner than peers on scoped rules</span></td><td>Maintain AGENTS.md by hand; no automatic learned memory</td></tr>
+<tr><td>4 &middot; Tool-enabled execution</td><td><span class="verdict v-strong">Strong, sandbox-native</span></td><td>Reproducible environments; vet MCP servers as trusted software</td></tr>
+<tr><td>5 &middot; Harness-enforced verification</td><td><span class="verdict v-mixed">Strong review, no local blocking gate</span></td><td>Enforce mandatory checks via CI and branch protection, not local hooks</td></tr>
+<tr><td>6 &middot; Accountable coordination authority</td><td><span class="verdict v-cond">Workflow support, not governance</span></td><td>Assign one human change owner and acceptance authority</td></tr>
+<tr><td>7 &middot; Isolation &amp; conditional concurrency</td><td><span class="verdict v-strong">Strong isolation, conditional concurrency</span></td><td>Reserve parallelism for genuinely independent work; own integration</td></tr>
+<tr><td>8 &middot; Observable, economical, bounded</td><td><span class="verdict v-mixed">Strong controls, incomplete economics</span></td><td>Add external token and cost budgets; no per-task spend cap</td></tr>
+</tbody></table>
+<hr />
+
+<h2 id="3-overall">3. Overall Assessment</h2>
+<p><strong>Codex is a strong, sandbox-first coding harness with configuration-dependent assurance.</strong> It provides most of the primitives the framework requires:</p>
+<ul>
+<li>An iterative model-and-tool loop that inspects files, runs commands and acts on structured results</li>
+<li>Repository-local instructions through <code>AGENTS.md</code>, an open convention shared across agent tools</li>
+<li>Built-in and custom <strong>subagents</strong> for delegated, parallel work</li>
+<li>A rich tool surface: shell, file edits, git, a browser tool, web search and MCP servers</li>
+<li><strong>OS-level sandboxing</strong> with read-only, workspace-write and full-access modes</li>
+<li>Layered <strong>approval policies</strong> plus an optional <strong>reviewer agent</strong> that screens risky actions</li>
+<li>A <strong>cloud</strong> execution surface and <strong>GitHub pull-request code review</strong></li>
+<li>Native <strong>OpenTelemetry</strong> export and configurable session logging</li>
+</ul>
+<p>As with any harness, these primitives do not automatically produce a mature engineering operating model. The useful distinction from the parent report holds, adapted to Codex:</p>
+<ul>
+<li><strong>Instructions (AGENTS.md, skills) shape what Codex tries to do.</strong></li>
+<li><strong>Sandbox modes, approval policies and the reviewer agent constrain what Codex is allowed to do.</strong></li>
+<li><strong>CI, cloud and GitHub review and human merge determine whether the change is acceptable to the organization.</strong></li>
+</ul>
+
+<h4>Distinctive strengths relative to Claude Code</h4>
+<ul>
+<li><strong>Default-on OS isolation.</strong> Sandboxing is enforced by the operating system (Seatbelt on macOS, <code>bwrap</code> plus <code>seccomp</code> on Linux, a native Windows sandbox) rather than being opt-in.</li>
+<li><strong>Network egress is off by default</strong> in workspace-write mode and is constrained by a domain-allowlist proxy when enabled, narrowing exfiltration surface.</li>
+<li><strong>Reviewer-agent guardrail.</strong> Setting <code>approvals_reviewer = "auto_review"</code> routes eligible approval requests through a reviewer that screens for data exfiltration, credential probing, persistent weakening of controls and destructive actions before Codex runs them.</li>
+<li><strong>Self-configuration tamper resistance.</strong> Within writable roots, <code>.git</code>, <code>.codex</code> and <code>.agents</code> are protected, so the agent cannot quietly rewrite the config that governs it.</li>
+<li><strong>Independent acceptance as a product.</strong> Codex code review on GitHub and the cloud-to-pull-request flow provide a review surface separated from the authoring context.</li>
+</ul>
+<h4>Relative gaps compared to Claude Code</h4>
+<ul>
+<li><strong>No programmable lifecycle hooks.</strong> Codex has no direct equivalent to Claude Code's <code>PreToolUse</code>, <code>PostToolUse</code> or <code>Stop</code> hooks, so arbitrary deterministic local checks cannot be made blocking in the same way. Enforcement leans on CI and review.</li>
+<li><strong>No path-scoped rules files.</strong> Nested <code>AGENTS.md</code> files partially cover component-specific guidance through directory placement, but there is no separate scoped-rules mechanism.</li>
+<li><strong>No automatic learned memory.</strong> <code>AGENTS.md</code> is hand-maintained rather than accumulating learned project patterns and corrections automatically.</li>
+<li><strong>Plan state is largely in-context</strong> rather than a first-class persisted artifact.</li>
+</ul>
+<hr />
+
+<h2 id="4-pillar-assessment">4. Pillar-by-Pillar Assessment</h2>
+<div class="pillwrap">
+
+<section class="pillar" data-pillar="1"><div class="pillar-kicker">PILLAR 1 / 08</div><h3>Stateful Reconciliation Loop</h3>
+<div class="assess">Assessment: Strong native loop, conditional state durability</div>
+<p>Codex operates through iterative tool use. It receives a prompt, inspects the workspace through file reads, <code>git status</code> and command execution, runs tools, and updates its context with structured results before deciding the next action. The OS-level sandbox cleanly separates what Codex can do technically from the approval policy that governs when it must ask. This grounds the reconciliation loop in real evidence rather than the model's narrative.</p>
+<h4>What is still missing or conditional</h4>
+<p>The loop is stateful within a session, but durability across sessions and context boundaries relies mostly on external artifacts. Codex surfaces an in-session plan as it works, yet the documentation does not describe a durable, harness-native task ledger or a persisted plan file. Session transcripts can be logged under <code>CODEX_HOME</code> and a session can be resumed, but a run can still lose the approved objective or infer completion from partial progress if the team has not established durable plan and handoff conventions.</p>
+<h4>Recommended implementation</h4>
+<p>Treat git history, commits and the pull request as the authoritative state. For substantial work, require an explicit repository artifact such as a <code>PLAN.md</code>, a work-item checklist or a progress document that records completed work, remaining work, failed approaches, acceptance criteria and unresolved risks. Enable session logging so a run is auditable and resumable.</p>
+</section>
+
+<section class="pillar" data-pillar="2"><div class="pillar-kicker">PILLAR 2 / 08</div><h3>Specification and Unit-of-Work Design</h3>
+<div class="assess">Assessment: Supported, strongly dependent on human and model judgment</div>
+<p>Codex supports separating discovery from implementation. The <strong>read-only</strong> sandbox mode lets it investigate and propose an approach without modifying files, and the built-in <code>explorer</code> agent is read-heavy for exactly this purpose. Cloud tasks can originate from a GitHub pull request, a Linear issue or a Slack thread, so the specification can carry structured context from the tracking system. <code>AGENTS.md</code> encodes durable conventions and acceptance expectations that shape how work is scoped.</p>
+<h4>What is still missing or conditional</h4>
+<p>Codex cannot guarantee that a plan reflects the correct business requirement or that tasks are decomposed along sound architectural boundaries. It can produce a polished but flawed plan when intent is incomplete or hidden dependencies are not discovered. There is also no first-class, product-level plan-approval mode positioned as prominently as Claude Code's plan mode. The read-only-then-write pattern approximates it but is a convention rather than an enforced gate.</p>
+<h4>Recommended implementation</h4>
+<p>Run ambiguous or cross-cutting work in read-only mode first and have the human owner approve the approach before switching to workspace-write. Require human approval for architecture changes, data migrations, authentication or security work, external integrations, production deployment and multi-module changes. Each work unit should identify scope, dependencies, affected components, validation and rollback considerations.</p>
+</section>
+
+<section class="pillar" data-pillar="3"><div class="pillar-kicker">PILLAR 3 / 08</div><h3>Context and Knowledge Engineering</h3>
+<div class="assess">Assessment: Solid support, thinner than peers on scoped rules and learned memory</div>
+<p>Codex provides a layered instruction model built on <code>AGENTS.md</code>. Files are discovered from the user home and from the git root down to the working directory, concatenated with closer files overriding earlier guidance, and bounded by <code>project_doc_max_bytes</code> (32&nbsp;KiB by default). Because discovery is directory-aware, a nested <code>AGENTS.md</code> can specialize guidance for a subtree, which provides practical path-scoping. Subagents run in isolated context and return summaries rather than raw output, which keeps the main thread focused on requirements and decisions. Codex also supports skills and MCP-provided context.</p>
+<h4>What is still missing or conditional</h4>
+<p><code>AGENTS.md</code> is contextual guidance, not enforced configuration, and can become stale or contradictory. Codex has no separate path-scoped rules mechanism beyond nested docs, and no automatic learned-memory equivalent that accumulates project patterns and user corrections on its own. Explicit context compaction and token-budget management are less developed as product surfaces than the equivalent Claude Code workflows.</p>
+<h4>Recommended implementation</h4>
+<p>Keep the root <code>AGENTS.md</code> concise and testable, holding only universally relevant facts and commands. Use nested <code>AGENTS.md</code> files for component-specific conventions, move lengthy procedures into skills, and put security enforcement in sandbox modes and approval policy rather than prose. Review <code>AGENTS.md</code> as maintained engineering documentation, and store task-specific decisions in the active plan or the pull request.</p>
+</section>
+
+<section class="pillar" data-pillar="4"><div class="pillar-kicker">PILLAR 4 / 08</div><h3>Tool-Enabled Execution Environment</h3>
+<div class="assess">Assessment: Strong native support</div>
+<p>Codex works directly with the development environment. It runs shell commands, edits files, performs git operations, uses a built-in browser tool and web search, and connects to external systems through MCP servers declared as <code>[mcp_servers.&lt;name&gt;]</code> over stdio or HTTP. Command execution is bound by the active sandbox mode and can be filtered by rules, so a tool that wants to mutate the filesystem or reach the network is constrained by policy. This lets Codex compare its reasoning with actual repository and runtime evidence, and the OS-level enforcement is a notable strength of this pillar.</p>
+<h4>What is still missing or conditional</h4>
+<p>Reliability still depends on the environment the team provides. Codex cannot compensate for broken setup scripts, inconsistent dependencies, unclear command output or an unsafe third-party MCP server. A common configuration error, writing <code>mcpServers</code> in camelCase instead of <code>mcp_servers</code>, is silently ignored. Cloud runs use a two-phase model where dependencies are installed with network access before the agent phase runs offline by default, so environment parity with CI must be managed deliberately.</p>
+<h4>Recommended implementation</h4>
+<ul>
+<li>Use reproducible local or containerized environments and deterministic setup scripts</li>
+<li>Standardize build, test, lint and type-check commands in <code>AGENTS.md</code></li>
+<li>Review MCP servers and their permissions as trusted software</li>
+<li>Keep the default-off network posture and use the domain-allowlist proxy where egress is required</li>
+<li>Align the cloud environment with CI as closely as practical</li>
+</ul>
+</section>
+
+<section class="pillar" data-pillar="5"><div class="pillar-kicker">PILLAR 5 / 08</div><h3>Harness-Enforced Verification</h3>
+<div class="assess">Assessment: Strong review surfaces and guardrails, but no local blocking gate</div>
+<p>Codex can run tests, builds, linters and type checks as part of a task and iterate on the results. It offers two verification-relevant strengths that are distinctive. First, <strong>GitHub code review</strong>: Codex reviews pull requests and, to keep signal high, flags only P0 and P1 issues, with an Automatic reviews setting that posts a review on every new PR without an explicit <code>@codex review</code> comment. Second, the <strong>reviewer agent</strong>: <code>approvals_reviewer = "auto_review"</code> screens risky approval requests for exfiltration, credential probing, control weakening and destructive actions before they run. Protected paths (<code>.git</code>, <code>.codex</code>, <code>.agents</code>) add tamper resistance for the agent's own governing files.</p>
+<h4>What is still missing or conditional</h4>
+<p>Verification is not automatically independent, adversarial or tamper-resistant for the tests themselves. Codex has <strong>no lifecycle-hook equivalent</strong> to Claude Code's <code>Stop</code> or <code>PreToolUse</code> hooks, so a team cannot make an arbitrary deterministic check block completion locally. Nothing at the harness level prevents the same run from writing the code, adjusting a test and concluding the result is complete. The <code>notify</code> mechanism signals events but does not gate them. In practice, hard verification enforcement is externalized to CI and branch protection.</p>
+<h4>Recommended implementation</h4>
+<ul>
+<li>Make mandatory checks blocking through <strong>CI and required status checks</strong> on protected branches, outside the agent's control</li>
+<li>Use Codex code review with Automatic reviews on, and treat it as a complement to, not a replacement for, human review</li>
+<li>Enable <code>auto_review</code> for higher-autonomy runs</li>
+<li>Require the final report to identify the commands run and their actual results</li>
+<li>Reserve human review for architecture, maintainability and intent</li>
+</ul>
+</section>
+
+<section class="pillar" data-pillar="6"><div class="pillar-kicker">PILLAR 6 / 08</div><h3>Single Accountable Coordination Authority</h3>
+<div class="assess">Assessment: Supported as a workflow pattern, not guaranteed as governance</div>
+<p>A primary Codex thread coordinates subagents and consolidates their results into one response, keeping the main chat focused on requirements and final outputs. The cloud-to-pull-request flow structurally reinforces human acceptance: Codex produces a diff or PR that a person inspects and merges. GitHub review comments inform, but do not perform, the merge decision. A human stays in the loop through approvals, read-only review and final acceptance.</p>
+<h4>What is still missing or conditional</h4>
+<p>Codex cannot assign organizational accountability. A lead thread can coordinate work, but it should not be treated as the final authority for accepting consequential changes. Because subagents inherit the parent's sandbox and permission posture, coordination is coherent by default, but responsibility for the integrated outcome still rests with a person.</p>
+<h4>Recommended implementation</h4>
+<p>Designate one human change owner who approves the objective and approach, resolves architectural disagreements, reviews significant risks and owns final merge or deployment acceptance. Use the lead Codex thread and the cloud PR flow as execution and packaging coordinators, and require that generated work receives appropriate human review before merge.</p>
+</section>
+
+<section class="pillar" data-pillar="7"><div class="pillar-kicker">PILLAR 7 / 08</div><h3>Isolated Execution with Conditional Concurrency</h3>
+<div class="assess">Assessment: Strong isolation, conditional concurrency with explicit caps</div>
+<p>Isolation is a Codex strength. Local runs execute inside an OS-level sandbox by default, cloud tasks run in isolated OpenAI-managed containers, and dev containers are supported for reproducible workspaces. Concurrency is available through subagents that run in parallel and are consolidated by the root thread, with explicit bounds: <code>agents.max_threads</code> defaults to 6, <code>agents.max_depth</code> defaults to 1 to prevent recursive fan-out, and <code>agents.job_max_runtime_seconds</code> caps per-worker runtime. A CSV batch mode can spawn one worker per row with a concurrency limit. Cloud tasks can also run in parallel across dedicated environments.</p>
+<h4>What is still missing or conditional</h4>
+<p>Separate subagent contexts do not automatically mean separate filesystem workspaces. Locally, parallel subagents share the same working tree, so write-heavy parallel work can create conflicts, which the documentation explicitly cautions about. As the framework notes, concurrency remains conditional on genuine task independence, clear ownership boundaries and available human review capacity.</p>
+<h4>Recommended implementation</h4>
+<ul>
+<li>Use subagents (and the <code>explorer</code> agent) for research, triage, tests and focused review</li>
+<li>Use cloud environments, dev containers or git worktrees when parallel implementation must be isolated at the filesystem level</li>
+<li>Avoid parallel edits to the same file or tightly coupled subsystem</li>
+<li>Keep one explicit synthesis and integration step, and account for the added token cost of subagent workflows</li>
+</ul>
+</section>
+
+<section class="pillar" data-pillar="8"><div class="pillar-kicker">PILLAR 8 / 08</div><h3>Observable, Economical and Bounded Operation</h3>
+<div class="assess">Assessment: Strong observability and boundaries, incomplete economic governance</div>
+<p>Codex exposes diffs, command output, approval prompts and session activity, and supports optional plaintext logs plus <code>session-*.jsonl</code> transcripts. Native <strong>OpenTelemetry</strong> export (<code>[otel]</code>) emits structured events for conversation starts, API requests, tool decisions and results to a configured collector, which is a strong observability primitive for teams. The operating envelope is bounded through sandbox modes, default-off network with domain-allowlist proxy, approval policies, and agent caps (<code>max_threads</code>, <code>max_depth</code>, <code>job_max_runtime_seconds</code>).</p>
+<h4>What is still missing or conditional</h4>
+<p>Economic governance is incomplete at the project level. There is no global token budget or per-task spend cap in configuration, and no built-in spending dashboard; fast mode and priority processing carry higher credit or cost multipliers. ChatGPT plan credits and rate limits provide a coarse ceiling, but outcome-based cost measurement and per-task budgets require external instrumentation, exactly as the framework predicts for current harnesses.</p>
+<h4>Recommended implementation</h4>
+<p>Wire OpenTelemetry export into the team's observability stack. Track time to verified completion, acceptance pass rate, regression rate, intervention count, review effort, token and credit usage, approval escalations and denials, failed-command recovery and parallel-agent overhead. Bound operation with sandbox modes, the network proxy allowlist, approval policy and agent caps, and add external budget controls for spend.</p>
+</section>
+
+</div>
+<hr />
+
+<h2 id="5-gap-analysis">5. Codex Gap Analysis</h2>
+<h3>5.1 Specification quality</h3>
+<p>Codex can structure and investigate a requirement, but it cannot independently establish whether the business objective is complete, consistent or aligned with stakeholder intent.</p>
+<p><strong>Implication:</strong> Human-led specification and acceptance remain first-class responsibilities.</p>
+<h3>5.2 Decomposition quality</h3>
+<p>Read-only mode, the <code>explorer</code> agent and subagents help divide work, but selecting boundaries that preserve architectural coherence is still the hardest judgment.</p>
+<p><strong>Implication:</strong> Review the approach for complex work before switching to write access.</p>
+<h3>5.3 Local verification enforcement</h3>
+<p>Codex has no lifecycle-hook mechanism to make an arbitrary deterministic check block completion locally. This is the most consequential structural gap relative to Claude Code.</p>
+<p><strong>Implication:</strong> Enforce mandatory checks through CI and required status checks on protected branches, not through local agent behavior.</p>
+<h3>5.4 Independent acceptance</h3>
+<p>Codex code review and the cloud PR flow give a genuine review surface separated from authoring, and the reviewer agent screens risky actions. These are strengths, but the creator and checker are not automatically separated for the test suite itself.</p>
+<p><strong>Implication:</strong> Keep independent CI and human approval for material changes; protect tests and controls outside the run's discretion.</p>
+<h3>5.5 Durable state and memory</h3>
+<p>Plan state is largely in-context and <code>AGENTS.md</code> is hand-maintained, with no automatic learned memory.</p>
+<p><strong>Implication:</strong> Externalize durable state to git, PRs and issue trackers, and maintain <code>AGENTS.md</code> as living documentation.</p>
+<h3>5.6 Human review throughput</h3>
+<p>Cloud parallelism and subagents can produce reviewable results faster than trusted engineers can review them.</p>
+<p><strong>Implication:</strong> Optimize output for reviewability and limit parallelism to review capacity.</p>
+<h3>5.7 Economic governance</h3>
+<p>More agents, longer loops, fast mode and priority processing increase credit and token consumption, and there is no per-task spend cap.</p>
+<p><strong>Implication:</strong> Measure total cost per verified outcome and add external budget controls.</p>
+<hr />
+
+<h2 id="6-baseline">6. Recommended Codex Baseline</h2>
+<h3>Repository configuration</h3>
+<ul>
+<li>Create a concise root <code>AGENTS.md</code> and nested <code>AGENTS.md</code> files for component-specific conventions</li>
+<li>Document architecture boundaries and source-of-truth locations</li>
+<li>Provide exact setup, build, test, lint and type-check commands</li>
+<li>State prohibited operations, escalation requirements and the definition of done</li>
+<li>Move specialized procedures into skills; keep the root doc under the size limit</li>
+</ul>
+<h3>Planning and execution</h3>
+<ul>
+<li>Run ambiguous or cross-cutting work in read-only mode first and approve the approach before writing</li>
+<li>Persist substantial plans in the repository or work-tracking system</li>
+<li>Implement one coherent increment at a time and update progress after each verified increment</li>
+<li>Record failed approaches a later session should avoid</li>
+</ul>
+<h3>Verification</h3>
+<ul>
+<li>Provide deterministic one-command checks and require tests before completion</li>
+<li>Enforce mandatory checks through CI and required status checks on protected branches</li>
+<li>Turn on Codex code review with Automatic reviews; treat it as a complement to human review</li>
+<li>Enable <code>approvals_reviewer = "auto_review"</code> for higher-autonomy runs</li>
+<li>Preserve final evidence (commands run and results) in the handoff or pull request</li>
+</ul>
+<h3>Security and permissions</h3>
+<ul>
+<li>Default to <code>workspace-write</code> with network access off; enable egress only through the domain-allowlist proxy</li>
+<li>Use <code>on-request</code> or granular approvals for interactive work and reserve <code>never</code> for isolated environments</li>
+<li>Keep protected paths intact so the agent cannot rewrite its own governing config</li>
+<li>Use isolated cloud environments or dev containers for high-autonomy execution</li>
+<li>Review MCP integrations and custom agents as part of the trusted computing base</li>
+</ul>
+<h3>Delegation and parallelism</h3>
+<ul>
+<li>Use the <code>explorer</code> and custom subagents to keep research out of the main context</li>
+<li>Set <code>agents.max_threads</code>, <code>agents.max_depth</code> and <code>job_max_runtime_seconds</code> deliberately</li>
+<li>Isolate parallel implementation at the filesystem level; avoid same-file parallel edits</li>
+<li>Keep one synthesis owner and account for the extra token cost</li>
+</ul>
+<h3>Governance and measurement</h3>
+<ul>
+<li>Assign one human change owner and review the approach before expensive execution</li>
+<li>Wire OpenTelemetry export into the observability stack</li>
+<li>Track verified outcomes rather than lines of generated code</li>
+<li>Measure intervention count, review effort, regressions, credit and token cost, and elapsed time</li>
+<li>Set external limits for spend, and use agent caps for iterations and runtime</li>
+</ul>
+<hr />
+
+<h2 id="7-conclusion">7. Conclusion</h2>
+<p>OpenAI Codex implements a strong set of primitives across all eight pillars, with a distinctive emphasis on <strong>enforced isolation and controlled action</strong>. Its OS-level sandbox, default-off network egress, layered approvals, reviewer-agent guardrail and protected self-configuration are among the most robust safety controls in any current coding harness, and its cloud plus GitHub review surfaces give a real path to independent acceptance.</p>
+<p>The framework's central thesis applies directly. Codex's most important limitations are not missing product features. They are the areas no harness can solve by itself: specification quality, decomposition quality, and the organizational choices around verification enforcement, review capacity and economic governance. Where Codex differs most from Claude Code is that it externalizes <strong>local verification enforcement</strong> to CI and code review rather than offering programmable blocking hooks, and it leans on hand-maintained <code>AGENTS.md</code> rather than automatic learned memory.</p>
+<p>A minimally configured Codex session is a capable, well-sandboxed agentic coding tool. A well-designed combination of <code>AGENTS.md</code>, skills, reproducible environments, sandbox and approval policy, the reviewer agent, CI, code review and human ownership becomes an agentic software-engineering system. As with Claude Code, the practical objective is not maximum autonomy. It is <strong>the highest level of autonomy that remains verifiable, reviewable, economical and accountable</strong>.</p>
+<hr />
+
+<h2 id="references">References</h2>
+<h5>Parent framework</h5>
+<ul>
+<li><em>Eight Pillars of Agentic Software Engineering</em> (initial tool assessment: Claude Code). July 15, 2026.</li>
+</ul>
+<h5>OpenAI Codex documentation</h5>
+<ul>
+<li>OpenAI. <a href="https://developers.openai.com/codex/concepts/sandboxing">Sandbox</a> (read-only, workspace-write, danger-full-access; Seatbelt / bwrap+seccomp / Windows).</li>
+<li>OpenAI. <a href="https://developers.openai.com/codex/agent-approvals-security">Agent approvals &amp; security</a> (untrusted, on-request, never, granular; <code>approvals_reviewer = "auto_review"</code>).</li>
+<li>OpenAI. <a href="https://developers.openai.com/codex/config-reference">Configuration reference</a> (<code>config.toml</code> keys, profiles, <code>[mcp_servers]</code>, <code>[otel]</code>, <code>[agents]</code>).</li>
+<li>OpenAI. <a href="https://developers.openai.com/codex/subagents">Subagents</a> (built-in default/worker/explorer, custom agents, <code>max_threads</code>, <code>max_depth</code>).</li>
+<li>OpenAI. <a href="https://developers.openai.com/codex/cloud">Codex cloud</a> (isolated environments, parallel tasks, two-phase runtime, pull-request output).</li>
+<li>OpenAI. <a href="https://developers.openai.com/codex/integrations/github">Codex code review in GitHub</a> (P0/P1 flagging, Automatic reviews, <code>@codex review</code>).</li>
+<li>OpenAI. <em>AGENTS.md</em> convention and Codex getting-started documentation.</li>
+</ul>
+<h5>Product announcements</h5>
+<ul>
+<li>OpenAI. <em>Introducing upgrades to Codex</em> (GPT&#8209;5&#8209;Codex; code review; cloud and local integration).</li>
+<li>OpenAI. <em>Introducing Codex</em> (cloud agent, isolated environments, pull-request workflow).</li>
+</ul>
+<div class="note"><b>Note on sources.</b> Documentation links resolve through <code>developers.openai.com/codex</code> to the current OpenAI Codex documentation host. Specific configuration keys and defaults cited above reflect the documentation at the time of writing and are subject to change as Codex evolves.</div>
+</article><footer>OpenAI Codex: Eight-Pillar Assessment &middot; Companion to the Eight Pillars of Agentic Software Engineering &middot; Standalone HTML report</footer></main></div><button class="mobile-menu" aria-label="Jump to report">View report</button><script>
+const bar=document.querySelector('.progress');const links=[...document.querySelectorAll('.toc a')];
+addEventListener('scroll',()=>{const d=document.documentElement;bar.style.width=(d.scrollTop/(d.scrollHeight-d.clientHeight)*100)+'%';let cur='';document.querySelectorAll('h2[id],h3[id]').forEach(h=>{if(h.getBoundingClientRect().top<160)cur=h.id});links.forEach(a=>a.classList.toggle('active',a.hash==='#'+cur));},{passive:true});
+document.querySelector('.mobile-menu').addEventListener('click',()=>document.querySelector('.content').scrollIntoView());
+</script></body></html>
